@@ -37,7 +37,7 @@ class RoutesMixin(object):
         return self.rule_map.get(cmd)
 
 
-class BaseHaven(RoutesMixin):
+class AppCallBacksMixin(RoutesMixin):
 
     def create_conn(self, f):
         """
@@ -77,6 +77,14 @@ class BaseHaven(RoutesMixin):
         f(conn, response)
         """
         self.events.before_response += safe_func(f)
+        return f
+
+    def after_response(self, f):
+        """
+        在 stream.write 之后，传入encode之后的data
+        f(conn, response)
+        """
+        self.events.after_response += safe_func(f)
         return f
 
     def close_conn(self, f):

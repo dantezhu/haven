@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import copy
 from .log import logger
 
 
@@ -20,6 +21,7 @@ class Request(object):
         # 为了书写方便
         self.finish = conn.finish
         self.close = conn.close
+        self.write = conn.write
 
         self.conn = conn
         self.raw_data = raw_data
@@ -35,14 +37,8 @@ class Request(object):
         if self.box.unpack(self.raw_data) > 0:
             return True
         else:
+            logger.error('unpack fail. request: %s', self)
             return False
-
-    def write(self, data, *args, **kwargs):
-        if isinstance(data, self.box_class):
-            # 打包
-            data = data.pack()
-
-        return self.conn.write(data, *args, **kwargs)
 
     @property
     def app(self):
@@ -65,6 +61,17 @@ class Request(object):
             return self.box.sn
         except:
             return None
+
+    def feedback(self, ret):
+        """
+        快速回复
+        """
+        box = copy.deepcopy(self.box)
+        # 清空body
+        box.body = ''
+        box.ret = ret
+
+        self.write(box)
 
     def __repr__(self):
         return repr(self.raw_data)

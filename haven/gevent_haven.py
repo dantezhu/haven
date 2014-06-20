@@ -1,35 +1,38 @@
 # -*- coding: utf-8 -*-
 
+
+import functools
+import gevent
 from gevent.server import StreamServer
+from netkit.stream import Stream
 
-from base import BaseHaven
+from .utils import safe_call
+from .connection import Connection
+from .haven import Haven
 
 
-class Connection(kola.connection.Connection):
-
-    def process(self):
-        while not self.stream.closed():
-            self._read_message()
+class GeventConnection(Connection):
 
     def _read_message(self):
-        # 按照官方文档，greenlet在存活的时候，是不参与内存回收的
-        # 只有greenlet在释放的时候，所有引用才会释放
-
-        job = gevent.spawn(self.stream.read_until, self.terminator, self._on_read_complete)
+        """
+        必须启动新的greenlet，否则会有内存泄漏
+        """
+        job = gevent.spawn(super(GeventConnection, self)._on_read_complete)
         job.join()
 
 
-class GeventHaven(BaseHaven):
+class GeventHaven(Haven):
 
     server = None
 
-    def __init__(self, server_class=None, conn_class=None):
+    def __init__(self, box_class, server_class=None, conn_class=None):
         super(GeventHaven, self).__init__()
+        self.box_class = box_class
         self.server_class = server_class or StreamServer
-        self.conn_class = conn_class or Connection
+        self.conn_class = conn_class or GeventConnection
 
     def handle_stream(self, sock, address):
-        self.conn_class(self, Stream(sock), address).process()
+        self.conn_class(self, self.box_class, Stream(sock), address).process()
 
     def run(self, host, port, patch_all=True):
         if patch_all:
@@ -40,9 +43,6 @@ class GeventHaven(BaseHaven):
 
         self._start_repeat_timers()
         self.server.serve_forever()
-
-    def register_blueprint(self, blueprint):
-        blueprint.register2app(self)
 
     def repeat_timer(self, interval):
         """
@@ -67,5 +67,3 @@ class GeventHaven(BaseHaven):
         把那些repeat timers启动
         """
         self.events.repeat_timer()
-        for name, bp in self.blueprints.items():
-            bp.events.repeat_app_timer()
