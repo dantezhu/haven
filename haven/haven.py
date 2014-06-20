@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .base import AppCallBacksMixin
+from .callbacks_mixin import AppCallBacksMixin
 
 
 class Haven(AppCallBacksMixin):
