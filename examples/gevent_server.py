@@ -37,11 +37,11 @@ def after_request(request, exc):
 
 @app.before_response
 def before_response(conn, rsp):
-    logger.error('rsp: %s', rsp)
+    logger.error('before_response: %s', rsp)
 
 @app.after_response
 def after_response(conn, rsp):
-    logger.error('rsp: %s', rsp)
+    logger.error('after_response: %s', rsp)
 
 @app.repeat_timer(5)
 def repeat_timer():
