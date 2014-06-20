@@ -15,15 +15,14 @@ class Request(object):
     box = None
     is_valid = False
 
-    def __init__(self, box_class, conn, raw_data):
-        self.box_class = box_class
-
+    def __init__(self, conn, box_class, raw_data):
         # 为了书写方便
         self.finish = conn.finish
         self.close = conn.close
         self.write = conn.write
 
         self.conn = conn
+        self.box_class = box_class
         self.raw_data = raw_data
         self.is_valid = self._parse_raw_data()
 

@@ -49,12 +49,11 @@ class Connection(object):
             self._read_message()
 
     def _read_message(self):
-        if not self.stream.closed():
-            raw_data = self.stream.read_with_checker(self.box_class().check)
-            if raw_data:
-                self._on_read_complete(raw_data)
-            else:
-                self._on_connection_close()
+        raw_data = self.stream.read_with_checker(self.box_class().check)
+        if raw_data:
+            self._on_read_complete(raw_data)
+        else:
+            self._on_connection_close()
 
     def _on_connection_close(self):
         # 链接被关闭的回调
@@ -67,7 +66,7 @@ class Connection(object):
         数据获取结束
         """
         logger.debug('raw_data: %s', raw_data)
-        request = self.request_class(self, raw_data)
+        request = self.request_class(self, self.box_class, raw_data)
         self._handle_request(request)
 
     def _handle_request(self, request):

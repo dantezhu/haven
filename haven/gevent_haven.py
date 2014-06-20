@@ -17,7 +17,7 @@ class GeventConnection(Connection):
         """
         必须启动新的greenlet，否则会有内存泄漏
         """
-        job = gevent.spawn(super(GeventConnection, self)._on_read_complete)
+        job = gevent.spawn(super(GeventConnection, self)._read_message)
         job.join()
 
 
@@ -34,11 +34,7 @@ class GeventHaven(Haven):
     def handle_stream(self, sock, address):
         self.conn_class(self, self.box_class, Stream(sock), address).process()
 
-    def run(self, host, port, patch_all=True):
-        if patch_all:
-            from gevent import monkey
-            monkey.patch_all()
-
+    def run(self, host, port):
         self.server = self.server_class((host, port), self.handle_stream)
 
         self._start_repeat_timers()
