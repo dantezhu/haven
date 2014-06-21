@@ -61,7 +61,7 @@ class Connection(object):
         """
         数据获取结束
         """
-        logger.debug('raw_data: %s', raw_data)
+        logger.debug('raw_data: %r', raw_data)
         request = self.request_class(self, self.box_class, raw_data)
         self._handle_request(request)
 
