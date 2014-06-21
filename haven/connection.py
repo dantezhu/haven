@@ -30,10 +30,6 @@ class Connection(object):
         self.stream.write(data)
         self.app.events.after_response(self, data)
 
-    def finish(self):
-        """Finishes the request."""
-        self.close()
-
     def close(self, exc_info=False):
         """
         直接关闭连接

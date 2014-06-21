@@ -17,7 +17,6 @@ class Request(object):
 
     def __init__(self, conn, box_class, raw_data):
         # 为了书写方便
-        self.finish = conn.finish
         self.close = conn.close
         self.write = conn.write
 
