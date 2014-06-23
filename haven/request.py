@@ -53,14 +53,7 @@ class Request(object):
         except:
             return None
 
-    @property
-    def sn(self):
-        try:
-            return self.box.sn
-        except:
-            return None
-
-    def feedback(self, ret):
+    def echo(self, ret):
         """
         快速回复
         """

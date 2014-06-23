@@ -76,7 +76,7 @@ class Connection(object):
         view_func = self.app.get_route_view_func(request.cmd)
         if not view_func:
             logger.error('cmd invalid. request: %s' % request)
-            request.feedback(constants.RET_INVALID_CMD)
+            request.echo(constants.RET_INVALID_CMD)
             return None
 
         if not self.app.got_first_request:
@@ -95,7 +95,7 @@ class Connection(object):
                 request, view_func, e, __import__('traceback').format_exc())
             logger.error(error)
             view_func_exc = e
-            request.feedback(constants.RET_INTERNAL)
+            request.echo(constants.RET_INTERNAL)
 
         self.app.events.after_request(request, view_func_exc or view_func_result)
 
