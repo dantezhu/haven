@@ -66,7 +66,7 @@ class AppCallBacksMixin(RoutesMixin):
     def after_request(self, f):
         """
         执行完route对应的view_func后
-        f(request)
+        f(request, exc)
         """
         self.events.after_request += safe_func(f)
         return f
