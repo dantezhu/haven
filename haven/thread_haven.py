@@ -13,6 +13,7 @@ from .haven import Haven
 
 class ThreadHaven(Haven):
 
+    allow_reuse_address = True
     server = None
 
     def __init__(self, box_class, server_class=None, conn_class=None):
