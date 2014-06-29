@@ -62,7 +62,7 @@ class Request(object):
             if hasattr(self.box, it):
                 setattr(rsp, it, getattr(self.box, it))
 
-        for k, v in kwargs:
+        for k, v in kwargs.items():
             setattr(rsp, k, v)
 
         return rsp
