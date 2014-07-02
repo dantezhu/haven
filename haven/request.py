@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import copy
 from .log import logger
 
 
@@ -9,8 +8,8 @@ class Request(object):
     请求
     """
 
-    box_class = None
     conn = None
+    box_class = None
     raw_data = None
     box = None
     is_valid = False
