@@ -63,7 +63,7 @@ class GLater(object):
                 result = safe_call(callback)
                 if repeat:
                     # 重复的调用
-                    self.set(interval, callback, repeat, force)
+                    self.set(interval, callback, repeat)
                 return result
 
         self.timer = timer = gevent.spawn_later(interval, callback_wrapper)

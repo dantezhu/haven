@@ -65,7 +65,7 @@ class TLater(object):
                 result = safe_call(callback)
                 if repeat:
                     # 重复的调用
-                    self.set(interval, callback, repeat, force)
+                    self.set(interval, callback, repeat)
                 return result
 
         self.timer = timer = threading.Timer(interval, callback_wrapper)
