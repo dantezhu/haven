@@ -11,7 +11,6 @@ from .utils import safe_call
 
 class THaven(Haven):
 
-    allow_reuse_address = True
     server = None
 
     def __init__(self, box_class, server_class=None, conn_class=None):
@@ -29,7 +28,14 @@ class THaven(Haven):
             def handle(sub_self):
                 self.conn_class(self, self.box_class, Stream(sub_self.connection), sub_self.client_address).process()
 
-        self.server = self.server_class((host, port), RequestHandler)
+        self.server = self.server_class((host, port), RequestHandler, bind_and_activate=False)
+        # 主线程退出时，所有子线程结束
+        self.server.daemon_threads = True
+        # 必须在server_bind之前
+        self.server.allow_reuse_address = True
+
+        self.server.server_bind()
+        self.server.server_activate()
 
         self.server.serve_forever()
 
