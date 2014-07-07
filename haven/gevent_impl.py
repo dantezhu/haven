@@ -62,7 +62,7 @@ class GBlueprint(Blueprint):
         later = GLater()
 
         def inner_repeat_timer(func):
-            self.events.repeat_app_timer += functools.partial(later.set, interval, func)
+            self.events.repeat_app_timer += functools.partial(later.set, interval, func, True)
 
         return inner_repeat_timer
 
