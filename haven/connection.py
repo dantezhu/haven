@@ -27,7 +27,7 @@ class Connection(object):
             # 打包
             data = data.pack()
         elif isinstance(data, dict):
-            data = self.box_class(data)
+            data = self.box_class(data).pack()
 
         self.app.events.before_response(self, data)
         for bp in self.app.blueprints:
