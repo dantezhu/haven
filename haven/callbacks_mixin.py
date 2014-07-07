@@ -97,3 +97,78 @@ class AppCallBacksMixin(RoutesMixin):
         """
         self.events.close_conn += safe_func(f)
         return f
+
+
+class BlueprintCallBacksMixin(RoutesMixin):
+
+    def before_request(self, f):
+        """
+        请求解析为json成功后
+        f(request)
+        """
+        self.events.before_request += safe_func(f)
+        return f
+
+    def after_request(self, f):
+        """
+        执行完route对应的view_func后
+        f(request)
+        """
+        self.events.after_request += safe_func(f)
+        return f
+
+    def create_app_conn(self, f):
+        """
+        连接建立成功后
+        f(conn)
+        """
+        self.events.create_app_conn += safe_func(f)
+        return f
+
+    def before_app_first_request(self, f):
+        """
+        第一次请求，请求解析为json成功后
+        f(request)
+        """
+        self.events.before_app_first_request += safe_func(f)
+        return f
+
+    def before_app_request(self, f):
+        """
+        请求解析为json成功后
+        f(request)
+        """
+        self.events.before_app_request += safe_func(f)
+        return f
+
+    def after_app_request(self, f):
+        """
+        执行完route对应的view_func后
+        f(request)
+        """
+        self.events.after_app_request += safe_func(f)
+        return f
+
+    def before_app_response(self, f):
+        """
+        在 stream.write 之前，传入encode之后的data
+        f(conn, response)
+        """
+        self.events.before_app_response += safe_func(f)
+        return f
+
+    def after_app_response(self, f):
+        """
+        在 stream.write 之后，传入encode之后的data
+        f(conn, response)
+        """
+        self.events.after_app_response += safe_func(f)
+        return f
+
+    def close_app_conn(self, f):
+        """
+        连接close之后
+        f(conn)
+        """
+        self.events.close_app_conn += safe_func(f)
+        return f
