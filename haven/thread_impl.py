@@ -45,10 +45,10 @@ class THaven(Haven):
         self.server.serve_forever()
 
     def repeat_timer(self, interval):
-        later = TLater()
-
         def inner_repeat_timer(func):
+            later = TLater()
             self.events.repeat_timer += functools.partial(later.set, interval, func, True)
+            return func
 
         return inner_repeat_timer
 
@@ -61,10 +61,10 @@ class THaven(Haven):
 class TBlueprint(Blueprint):
 
     def repeat_app_timer(self, interval):
-        later = TLater()
-
         def inner_repeat_timer(func):
+            later = TLater()
             self.events.repeat_app_timer += functools.partial(later.set, interval, func, True)
+            return func
 
         return inner_repeat_timer
 
