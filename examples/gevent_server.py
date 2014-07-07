@@ -7,6 +7,7 @@ from netkit.box import Box
 
 from haven.gevent_impl import GHaven
 from haven.log import logger
+import user
 
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
@@ -47,4 +48,5 @@ def after_response(conn, rsp):
 def index(request):
     request.echo(ret=100)
 
+app.register_blueprint(user.bp)
 app.run('127.0.0.1', 7777)
