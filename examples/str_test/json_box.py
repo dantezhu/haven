@@ -11,7 +11,7 @@ class JsonBox(LineBox):
         if not values:
             return None
 
-        return values.get('endpoint')
+        return values.get('endpoint', None)
 
     def map(self, **kwargs):
         box = JsonBox()
