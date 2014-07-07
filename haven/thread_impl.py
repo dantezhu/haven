@@ -2,7 +2,6 @@
 
 from SocketServer import ThreadingTCPServer, StreamRequestHandler
 import threading
-import functools
 from netkit.stream import Stream
 
 from .connection import Connection
@@ -10,13 +9,13 @@ from .haven import Haven
 from .utils import safe_call
 
 
-class ThreadHaven(Haven):
+class THaven(Haven):
 
     allow_reuse_address = True
     server = None
 
     def __init__(self, box_class, server_class=None, conn_class=None):
-        super(ThreadHaven, self).__init__()
+        super(THaven, self).__init__()
         self.box_class = box_class
         self.server_class = server_class or ThreadingTCPServer
         self.conn_class = conn_class or Connection
@@ -35,7 +34,7 @@ class ThreadHaven(Haven):
         self.server.serve_forever()
 
 
-class ThreadLater(object):
+class TLater(object):
 
     timer = None
 

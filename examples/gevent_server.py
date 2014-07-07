@@ -5,14 +5,14 @@ import logging
 from gevent import monkey;monkey.patch_all()
 from netkit.box import Box
 
-from haven.gevent_impl import GeventHaven
+from haven.gevent_impl import GHaven
 from haven.log import logger
 
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
 
 
-app = GeventHaven(Box)
+app = GHaven(Box)
 
 
 @app.create_conn

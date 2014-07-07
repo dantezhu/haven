@@ -3,13 +3,13 @@
 import logging
 from netkit.box import Box
 
-from haven.thread_impl import ThreadHaven
+from haven.thread_impl import THaven
 from haven.log import logger
 
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
 
-app = ThreadHaven(Box)
+app = THaven(Box)
 
 @app.create_conn
 def create_conn(conn):
