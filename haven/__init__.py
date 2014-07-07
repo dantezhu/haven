@@ -6,8 +6,8 @@ from .log import logger
 from .blueprint import Blueprint
 
 try:
-    from gevent_haven import GeventHaven
+    from gevent_impl import GeventHaven
 except:
     GeventHaven = None
 
-from thread_haven import ThreadHaven
+from thread_impl import ThreadHaven
