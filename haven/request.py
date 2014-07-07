@@ -43,11 +43,19 @@ class Request(object):
 
     @property
     def blueprint(self):
+        cmd_parts = str(self.cmd or '').split('.')
+        bp_prefix, cmd = cmd_parts if len(cmd_parts) == 2 else (None, self.cmd)
+
         for bp in self.app.blueprints:
-            if bp.get_route_view_func(self.cmd):
+            if bp_prefix == bp.prefix and bp.get_route_view_func(cmd):
                 return bp
 
         return None
+
+    @property
+    def blueprint_cmd(self):
+        cmd_parts = str(self.cmd or '').split('.')
+        return cmd_parts[1] if len(cmd_parts) == 2 else self.cmd
 
     @property
     def address(self):

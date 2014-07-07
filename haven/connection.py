@@ -83,14 +83,11 @@ class Connection(object):
         if not request.is_valid:
             return None
 
-        containers = [self.app]
-        containers.extend(self.app.blueprints)
+        view_func = self.app.get_route_view_func(request.cmd)
+        if not view_func and request.blueprint:
+            view_func = request.blueprint.get_route_view_func(request.blueprint_cmd)
 
-        for container in containers:
-            view_func = container.get_route_view_func(request.cmd)
-            if view_func:
-                break
-        else:
+        if not view_func:
             logger.error('cmd invalid. request: %s' % request)
             request.echo(ret=constants.RET_INVALID_CMD)
             return None
