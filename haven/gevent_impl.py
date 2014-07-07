@@ -3,10 +3,12 @@
 
 import gevent
 from gevent.server import StreamServer
+import functools
 from netkit.stream import Stream
 
 from .connection import Connection
 from .haven import Haven
+from .blueprint import Blueprint
 from .utils import safe_call
 
 
@@ -36,7 +38,33 @@ class GHaven(Haven):
     def run(self, host, port):
         self.server = self.server_class((host, port), self.handle_stream)
 
+        self._start_repeat_timers()
+
         self.server.serve_forever()
+
+    def repeat_timer(self, interval):
+        later = GLater()
+
+        def inner_repeat_timer(func):
+            self.events.repeat_timer += functools.partial(later.set, interval, func)
+
+        return inner_repeat_timer
+
+    def _start_repeat_timers(self):
+        self.events.repeat_timer()
+        for name, bp in self.blueprints.items():
+            bp.events.repeat_app_timer()
+
+
+class GBlueprint(Blueprint):
+
+    def repeat_app_timer(self, interval):
+        later = GLater()
+
+        def inner_repeat_timer(func):
+            self.events.repeat_app_timer += functools.partial(later.set, interval, func)
+
+        return inner_repeat_timer
 
 
 class GLater(object):

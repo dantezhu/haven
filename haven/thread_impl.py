@@ -2,10 +2,12 @@
 
 from SocketServer import ThreadingTCPServer, StreamRequestHandler
 import threading
+import functools
 from netkit.stream import Stream
 
 from .connection import Connection
 from .haven import Haven
+from .blueprint import Blueprint
 from .utils import safe_call
 
 
@@ -37,7 +39,33 @@ class THaven(Haven):
         self.server.server_bind()
         self.server.server_activate()
 
+        self._start_repeat_timers()
+
         self.server.serve_forever()
+
+    def repeat_timer(self, interval):
+        later = TLater()
+
+        def inner_repeat_timer(func):
+            self.events.repeat_timer += functools.partial(later.set, interval, func)
+
+        return inner_repeat_timer
+
+    def _start_repeat_timers(self):
+        self.events.repeat_timer()
+        for name, bp in self.blueprints.items():
+            bp.events.repeat_app_timer()
+
+
+class TBlueprint(Blueprint):
+
+    def repeat_app_timer(self, interval):
+        later = TLater()
+
+        def inner_repeat_timer(func):
+            self.events.repeat_app_timer += functools.partial(later.set, interval, func)
+
+        return inner_repeat_timer
 
 
 class TLater(object):
