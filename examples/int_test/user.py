@@ -9,15 +9,11 @@ bp = Blueprint()
 
 @bp.route(100)
 def reg(request):
-    request.write(
-        dict(ret=0)
-    )
+    request.echo(ret=100)
 
 @bp.route(101)
 def login(request):
-    request.write(
-        dict(ret=0)
-    )
+    request.echo(ret=101)
 
 @bp.create_app_conn
 def create_app_conn(conn):
