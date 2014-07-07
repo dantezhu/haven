@@ -3,8 +3,7 @@
 import logging
 from netkit.box import Box
 
-from haven.thread_impl import THaven
-from haven.log import logger
+from haven import THaven, logger
 import user
 
 logger.addHandler(logging.StreamHandler())

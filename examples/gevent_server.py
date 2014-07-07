@@ -5,8 +5,7 @@ import logging
 from gevent import monkey;monkey.patch_all()
 from netkit.box import Box
 
-from haven.gevent_impl import GHaven
-from haven.log import logger
+from haven import GHaven, logger
 import user
 
 logger.addHandler(logging.StreamHandler())

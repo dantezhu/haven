@@ -7,13 +7,13 @@ from haven import Blueprint, logger
 bp = Blueprint()
 
 
-@bp.route()
+@bp.route(100)
 def reg(request):
     request.write(
         dict(ret=0)
     )
 
-@bp.route()
+@bp.route(101)
 def login(request):
     request.write(
         dict(ret=0)
@@ -49,4 +49,8 @@ def after_request(request, exc):
 
 @bp.before_app_response
 def before_app_response(conn, rsp):
-    logger.error('rsp: %s', rsp)
+    logger.error('bp.before_app_response rsp: %r', rsp)
+
+@bp.after_app_response
+def after_app_response(conn, rsp):
+    logger.error('bp.after_app_response rsp: %r', rsp)

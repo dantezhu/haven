@@ -87,7 +87,7 @@ class Connection(object):
         containers.extend(self.app.blueprints)
 
         for container in containers:
-            view_func = container.get_route_view_func_from_all(request.cmd)
+            view_func = container.get_route_view_func(request.cmd)
             if view_func:
                 break
         else:
