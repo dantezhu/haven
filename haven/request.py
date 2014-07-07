@@ -52,15 +52,19 @@ class Request(object):
         except:
             return None
 
-    def echo(self, **kwargs):
+    def make_rsp(self, **kwargs):
         """
-        快速回复
+        生成响应
         """
         assert self.box is not None
 
-        box = self.box.map(**kwargs)
+        return self.box.map(**kwargs)
 
-        self.write(box)
+    def echo(self, **kwargs):
+        """
+        快速响应
+        """
+        self.write(self.make_rsp(**kwargs))
 
     def __repr__(self):
         return repr(self.raw_data)
