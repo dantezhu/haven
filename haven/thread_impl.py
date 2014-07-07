@@ -95,6 +95,8 @@ class TLater(object):
                 return result
 
         self.timer = timer = threading.Timer(interval, callback_wrapper)
+        # 跟着主线程结束。默认值是和创建的线程一致
+        timer.daemon = True
         timer.start()
 
     def clear(self):
