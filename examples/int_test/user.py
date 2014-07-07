@@ -2,9 +2,9 @@
 
 # -*- coding: utf-8 -*-
 
-from haven import Blueprint, logger
+from haven import TBlueprint, logger
 
-bp = Blueprint()
+bp = TBlueprint()
 
 
 @bp.route(100)
@@ -50,3 +50,7 @@ def before_app_response(conn, rsp):
 @bp.after_app_response
 def after_app_response(conn, rsp):
     logger.error('bp.after_app_response rsp: %r', rsp)
+
+@bp.repeat_app_timer(5)
+def repeat_app_timer():
+    logger.error('bp.repeat_app_timer')

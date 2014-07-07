@@ -39,6 +39,10 @@ def before_response(conn, rsp):
 def after_response(conn, rsp):
     logger.error('after_response: %r', rsp)
 
+@app.repeat_timer(5)
+def repeat_timer():
+    logger.error('repeat_timer')
+
 @app.route(1)
 def index(request):
     from haven import TLater

@@ -52,7 +52,7 @@ class GHaven(Haven):
 
     def _start_repeat_timers(self):
         self.events.repeat_timer()
-        for name, bp in self.blueprints.items():
+        for bp in self.blueprints:
             bp.events.repeat_app_timer()
 
 

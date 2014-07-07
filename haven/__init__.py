@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
-__version__ = '1.0.29'
+__version__ = '1.0.31'
 
 from .log import logger
-from .blueprint import Blueprint
 
 try:
-    from gevent_impl import GHaven, GLater
+    from gevent_impl import GHaven, GBlueprint, GLater
 except:
-    GHaven = GLater = None
+    GHaven = GLater = GBlueprint = None
 
-from thread_impl import THaven, TLater
+from thread_impl import THaven, TBlueprint, TLater
