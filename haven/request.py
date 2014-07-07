@@ -52,25 +52,13 @@ class Request(object):
         except:
             return None
 
-    def make_rsp(self, **kwargs):
-        """
-        生成rsp
-        """
-        rsp = self.box_class()
-        for it in ['cmd', 'sn']:
-            if hasattr(self.box, it):
-                setattr(rsp, it, getattr(self.box, it))
-
-        for k, v in kwargs.items():
-            setattr(rsp, k, v)
-
-        return rsp
-
-    def echo(self, ret):
+    def echo(self, **kwargs):
         """
         快速回复
         """
-        box = self.make_rsp(ret=ret)
+        assert self.box is not None
+
+        box = self.box.map(**kwargs)
 
         self.write(box)
 

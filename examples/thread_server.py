@@ -45,6 +45,6 @@ def repeat_timer():
 
 @app.route(1)
 def index(request):
-    request.echo(100)
+    request.echo(ret=100)
 
 app.run('127.0.0.1', 7777)
