@@ -14,6 +14,8 @@ class Connection(object):
         self.request_class = request_class or Request
 
         self.app.events.create_conn(self)
+        for bp in self.app.blueprints:
+            bp.events.create_app_conn(self)
 
     def write(self, data):
         """
@@ -27,7 +29,13 @@ class Connection(object):
             data = data.pack()
 
         self.app.events.before_response(self, data)
+        for bp in self.app.blueprints:
+            bp.events.before_app_response(self, data)
+
         self.stream.write(data)
+
+        for bp in self.app.blueprints:
+            bp.events.after_app_response(self, data)
         self.app.events.after_response(self, data)
 
     def close(self, exc_info=False):
@@ -55,6 +63,8 @@ class Connection(object):
         # 链接被关闭的回调
         logger.debug('socket closed')
 
+        for bp in self.app.blueprints:
+            bp.events.close_app_conn(self)
         self.app.events.close_conn(self)
 
     def _on_read_complete(self, raw_data):
@@ -73,8 +83,14 @@ class Connection(object):
         if not request.is_valid:
             return None
 
-        view_func = self.app.get_route_view_func(request.cmd)
-        if not view_func:
+        containers = [self.app]
+        containers.extend(self.app.blueprints)
+
+        for container in containers:
+            view_func = container.get_route_view_func_from_all(request.cmd)
+            if view_func:
+                break
+        else:
             logger.error('cmd invalid. request: %s' % request)
             request.echo(ret=constants.RET_INVALID_CMD)
             return None
@@ -82,8 +98,14 @@ class Connection(object):
         if not self.app.got_first_request:
             self.app.got_first_request = True
             self.app.events.before_first_request(request)
+            for bp in self.app.blueprints:
+                bp.events.before_app_first_request(request)
 
         self.app.events.before_request(request)
+        for bp in self.app.blueprints:
+            bp.events.before_app_request(request)
+        if request.blueprint:
+            request.blueprint.events.before_request(request)
 
         view_func_exc = None
         view_func_result = None
@@ -97,6 +119,10 @@ class Connection(object):
             view_func_exc = e
             request.echo(ret=constants.RET_INTERNAL)
 
+        if request.blueprint:
+            request.blueprint.events.after_request(request, view_func_exc or view_func_result)
+        for bp in self.app.blueprints:
+            bp.events.after_app_request(request, view_func_exc or view_func_result)
         self.app.events.after_request(request, view_func_exc or view_func_result)
 
         return view_func_result

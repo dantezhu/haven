@@ -42,6 +42,14 @@ class Request(object):
         return self.conn.app
 
     @property
+    def blueprint(self):
+        for bp in self.app.blueprints:
+            if bp.get_route_view_func(self.cmd):
+                return bp
+
+        return None
+
+    @property
     def address(self):
         return self.conn.address
 
