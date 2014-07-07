@@ -8,12 +8,8 @@ bp = GBlueprint('user')
 
 
 @bp.route()
-def reg(request):
-    request.echo(ret=10)
-
-@bp.route()
 def login(request):
-    request.echo(ret=11)
+    request.write(request.make_rsp(ret=11))
 
 @bp.create_app_conn
 def create_app_conn(conn):

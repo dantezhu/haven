@@ -7,13 +7,9 @@ from haven import TBlueprint, logger
 bp = TBlueprint()
 
 
-@bp.route(100)
-def reg(request):
-    request.echo(ret=100)
-
 @bp.route(101)
 def login(request):
-    request.echo(ret=101)
+    request.write(request.make_rsp(ret=101))
 
 @bp.create_app_conn
 def create_app_conn(conn):

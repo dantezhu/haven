@@ -76,11 +76,5 @@ class Request(object):
 
         return self.box.map(**kwargs)
 
-    def echo(self, **kwargs):
-        """
-        快速响应
-        """
-        self.write(self.make_rsp(**kwargs))
-
     def __repr__(self):
         return repr(self.raw_data)

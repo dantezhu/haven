@@ -49,7 +49,7 @@ def repeat_timer():
 
 @app.route()
 def index(request):
-    request.echo(ret=100)
+    request.write(request.make_rsp(ret=100))
 
 app.register_blueprint(user.bp)
 app.run('127.0.0.1', 7777)

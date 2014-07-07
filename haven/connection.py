@@ -89,7 +89,7 @@ class Connection(object):
 
         if not view_func:
             logger.error('cmd invalid. request: %s' % request)
-            request.echo(ret=constants.RET_INVALID_CMD)
+            request.write(request.make_rsp(ret=constants.RET_INVALID_CMD))
             return None
 
         if not self.app.got_first_request:
@@ -114,7 +114,7 @@ class Connection(object):
                 request, view_func, e, __import__('traceback').format_exc())
             logger.error(error)
             view_func_exc = e
-            request.echo(ret=constants.RET_INTERNAL)
+            request.write(request.make_rsp(ret=constants.RET_INTERNAL))
 
         if request.blueprint:
             request.blueprint.events.after_request(request, view_func_exc or view_func_result)

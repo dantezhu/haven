@@ -57,7 +57,7 @@ def index(request):
         later.set(1, x, repeat=True)
 
     x()
-    request.echo(ret=100)
+    request.write(request.make_rsp(ret=100))
 
 app.register_blueprint(user.bp)
 app.run('127.0.0.1', 7777)
