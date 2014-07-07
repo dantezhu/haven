@@ -16,7 +16,10 @@ class RoutesMixin(object):
         self.rule_map = dict()
         self.events = Events()
 
-    def add_route_rule(self, cmd, view_func, **options):
+    def add_route_rule(self, cmd=None, view_func=None, **options):
+        assert view_func is not None, 'expected view func if cmd is not provided.'
+
+        cmd = cmd or view_func.__name__
 
         if cmd in self.rule_map and view_func != self.rule_map[cmd]:
             raise Exception, 'repeat view_func for cmd: %(cmd)s, old_view_func:%(old_view_func)s, new_view_func: %(new_view_func)s' % dict(
@@ -27,7 +30,7 @@ class RoutesMixin(object):
 
         self.rule_map[cmd] = view_func
 
-    def route(self, cmd, **options):
+    def route(self, cmd=None, **options):
         def decorator(f):
             self.add_route_rule(cmd, f, **options)
             return f
