@@ -41,6 +41,18 @@ def after_response(conn, rsp):
 
 @app.route(1)
 def index(request):
+    from haven import TLater
+    later = TLater()
+
+    def x():
+        logger.debug('x')
+        later.set(1, y, repeat=True)
+
+    def y():
+        logger.debug('y')
+        later.set(1, x, repeat=True)
+
+    x()
     request.echo(ret=100)
 
 app.register_blueprint(user.bp)

@@ -5,7 +5,7 @@ import logging
 from gevent import monkey;monkey.patch_all()
 from netkit.box import Box
 
-from haven import GHaven, logger
+from haven import GHaven, logger, GLater
 import user
 
 logger.addHandler(logging.StreamHandler())
@@ -45,6 +45,17 @@ def after_response(conn, rsp):
 
 @app.route(1)
 def index(request):
+    later = GLater()
+
+    def x():
+        logger.debug('x')
+        later.set(1, y, repeat=True)
+
+    def y():
+        logger.debug('y')
+        later.set(1, x, repeat=True)
+
+    x()
     request.echo(ret=100)
 
 app.register_blueprint(user.bp)
