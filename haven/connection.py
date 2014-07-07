@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from . import constants
-from .request import Request
 from .log import logger
 
 
 class Connection(object):
-    def __init__(self, app, box_class, stream, address, request_class=None):
+    def __init__(self, app, box_class, request_class, stream, address):
         self.app = app
         self.box_class = box_class
+        self.request_class = request_class
         self.stream = stream
         self.address = address
-        self.request_class = request_class or Request
 
         self.app.events.create_conn(self)
         for bp in self.app.blueprints:

@@ -6,6 +6,7 @@ import functools
 from netkit.stream import Stream
 
 from .connection import Connection
+from .request import Request
 from .haven import Haven
 from .blueprint import Blueprint
 from .utils import safe_call
@@ -15,20 +16,20 @@ class THaven(Haven):
 
     server = None
 
-    def __init__(self, box_class, server_class=None, conn_class=None):
+    def __init__(self, box_class, server_class=None, conn_class=None, request_class=None):
         super(THaven, self).__init__()
         self.box_class = box_class
         self.server_class = server_class or ThreadingTCPServer
         self.conn_class = conn_class or Connection
-
-    def handle_stream(self, sock, address):
-        self.conn_class(self, self.box_class, Stream(sock), address).process()
+        self.request_class = request_class or Request
 
     def run(self, host, port):
 
         class RequestHandler(StreamRequestHandler):
             def handle(sub_self):
-                self.conn_class(self, self.box_class, Stream(sub_self.connection), sub_self.client_address).process()
+                self.conn_class(
+                    self, self.box_class, self.request_class, Stream(sub_self.connection), sub_self.client_address
+                ).process()
 
         self.server = self.server_class((host, port), RequestHandler, bind_and_activate=False)
         # 主线程退出时，所有子线程结束

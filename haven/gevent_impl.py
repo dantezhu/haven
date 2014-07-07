@@ -7,6 +7,7 @@ import functools
 from netkit.stream import Stream
 
 from .connection import Connection
+from .request import Request
 from .haven import Haven
 from .blueprint import Blueprint
 from .utils import safe_call
@@ -26,14 +27,15 @@ class GHaven(Haven):
 
     server = None
 
-    def __init__(self, box_class, server_class=None, conn_class=None):
+    def __init__(self, box_class, server_class=None, conn_class=None, request_class=None):
         super(GHaven, self).__init__()
         self.box_class = box_class
         self.server_class = server_class or StreamServer
         self.conn_class = conn_class or GConnection
+        self.request_class = request_class or Request
 
     def handle_stream(self, sock, address):
-        self.conn_class(self, self.box_class, Stream(sock), address).process()
+        self.conn_class(self, self.box_class, self.request_class, Stream(sock), address).process()
 
     def run(self, host, port):
         self.server = self.server_class((host, port), self.handle_stream)
