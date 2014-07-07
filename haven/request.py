@@ -65,18 +65,13 @@ class Request(object):
             return None
 
     def write(self, data):
+        if isinstance(data, dict):
+            # 生成box
+            data = self.box.map(data)
         return self.conn.write(data)
 
     def close(self, exc_info=False):
         return self.conn.close(exc_info)
-
-    def make_rsp(self, **kwargs):
-        """
-        生成响应
-        """
-        assert self.box is not None
-
-        return self.box.map(**kwargs)
 
     def __repr__(self):
         return repr(self.raw_data)

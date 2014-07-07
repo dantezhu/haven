@@ -5,6 +5,13 @@ from netkit.line_box import LineBox
 
 class JsonBox(LineBox):
 
+    def __init__(self, init_data=None):
+        # 不要让顶层初始化init_data
+        super(JsonBox, self).__init__(None)
+
+        if init_data:
+            self.set_json(init_data)
+
     @property
     def cmd(self):
         values = self.get_json()
@@ -13,13 +20,10 @@ class JsonBox(LineBox):
 
         return values.get('endpoint', None)
 
-    def map(self, **kwargs):
-        box = JsonBox()
-        values = dict(
+    def map(self, map_data):
+        init_data = dict(
             endpoint=self.cmd,
         )
-        values.update(kwargs)
+        init_data.update(map_data)
 
-        box.set_json(values)
-
-        return box
+        return self.__class__(init_data)
