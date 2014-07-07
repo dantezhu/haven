@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="haven",
-    version='1.0.37',
+    version='1.0.38',
     zip_safe=False,
     platforms='any',
     packages=['haven'],

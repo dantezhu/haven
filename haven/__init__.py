@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__version__ = '1.0.37'
+__version__ = '1.0.38'
 
 from .log import logger
 
