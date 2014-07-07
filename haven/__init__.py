@@ -8,6 +8,6 @@ from .blueprint import Blueprint
 try:
     from gevent_impl import GHaven, GLater
 except:
-    GeventHaven = GLater = None
+    GHaven = GLater = None
 
 from thread_impl import THaven, TLater
