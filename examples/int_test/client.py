@@ -29,7 +29,9 @@ while True:
     buf = stream.read_with_checker(Box().unpack)
 
     if buf:
-        print Box(buf)
+        box2 = Box()
+        box2.unpack(buf)
+        print box2
 
     if stream.closed():
         print 'server closed'

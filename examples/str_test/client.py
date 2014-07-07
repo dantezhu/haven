@@ -29,7 +29,9 @@ while True:
     buf = stream.read_with_checker(JsonBox().unpack)
 
     if buf:
-        print JsonBox(buf)
+        box2 = JsonBox()
+        box2.unpack(buf)
+        print box2
 
     if stream.closed():
         print 'server closed'
