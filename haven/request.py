@@ -15,10 +15,6 @@ class Request(object):
     is_valid = False
 
     def __init__(self, conn, box_class, raw_data):
-        # 为了书写方便
-        self.close = conn.close
-        self.write = conn.write
-
         self.conn = conn
         self.box_class = box_class
         self.raw_data = raw_data
@@ -67,6 +63,12 @@ class Request(object):
             return self.box.cmd
         except:
             return None
+
+    def write(self, data):
+        return self.conn.write(data)
+
+    def close(self, exc_info=False):
+        return self.conn.close(exc_info)
 
     def make_rsp(self, **kwargs):
         """
