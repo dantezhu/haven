@@ -111,9 +111,8 @@ class Connection(object):
         try:
             view_func_result = view_func(request)
         except Exception, e:
-            error = 'view_func raise exception. request: %s, view_func: %s, e: %s, traceback: %s' % (
-                request, view_func, e, __import__('traceback').format_exc())
-            logger.error(error)
+            logger.error('view_func raise exception. request: %s, view_func: %s, e: %s',
+                         request, view_func, e, exc_info=True)
             view_func_exc = e
             request.write(dict(ret=constants.RET_INTERNAL))
 
