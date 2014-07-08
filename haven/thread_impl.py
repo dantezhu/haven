@@ -108,5 +108,8 @@ class TLater(object):
         if not self.timer:
             return
 
-        self.timer.cancel()
+        try:
+            self.timer.cancel()
+        except:
+            pass
         self.timer = None

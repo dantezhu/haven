@@ -106,5 +106,8 @@ class GLater(object):
             return
 
         # 不阻塞
-        self.timer.kill(block=False)
+        try:
+            self.timer.kill(block=False)
+        except:
+            pass
         self.timer = None
