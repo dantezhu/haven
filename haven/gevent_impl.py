@@ -88,8 +88,9 @@ class GLater(object):
         def callback_wrapper():
             # 必须要确定，这次调用就是这个timer引起的
             if self.timer == timer:
-                # 如果不加这句，那么在炸金花中，如果用户不操作服务器自动弃牌就会导致pymyql和redis在game_over中报错
+                # 必须加这句，否则如果在callback中有clear操作，会出现GreenletExit
                 self.timer = None
+                # 不可以加 timer = None，否则会导致判断self.timer == timer 报错找不到timer
                 result = safe_call(callback)
                 if repeat and not self.timer:
                     # 之所以还要判断timer，是因为callback中可能设置了新的回调
