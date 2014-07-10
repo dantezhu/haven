@@ -6,6 +6,7 @@ from . import autoreload
 
 class Haven(AppCallBacksMixin):
     debug = False
+    use_reloader = None
     got_first_request = False
     blueprints = None
 
@@ -20,10 +21,9 @@ class Haven(AppCallBacksMixin):
         if debug is not None:
             self.debug = debug
 
-        if use_reloader is None:
-            use_reloader = self.debug
+        self.use_reloader = use_reloader if use_reloader is not None else self.debug
 
-        if use_reloader:
+        if self.use_reloader:
             autoreload.main(self._run, (host, port))
         else:
             self._run(host, port)

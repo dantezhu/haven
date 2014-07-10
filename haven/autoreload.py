@@ -134,7 +134,6 @@ def restart_with_reloader():
 
 def python_reloader(main_func, args, kwargs):
     if os.environ.get("RUN_MAIN") == "true":
-        logger.debug(' * Restarting with reloader')
         thread.start_new_thread(main_func, args, kwargs)
         try:
             reloader_thread()

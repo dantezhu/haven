@@ -11,6 +11,7 @@ from .request import Request
 from .haven import Haven
 from .blueprint import Blueprint
 from .utils import safe_call
+from .log import logger
 
 
 class GConnection(Connection):
@@ -46,6 +47,8 @@ class GHaven(Haven):
         return inner_repeat_timer
 
     def _run(self, host, port):
+        logger.info('Running server on %s:%s, debug: %s, use_reloader: %s', host, port, self.debug, self.use_reloader)
+
         self.server = self.server_class((host, port), self.handle_stream)
 
         self._start_repeat_timers()
