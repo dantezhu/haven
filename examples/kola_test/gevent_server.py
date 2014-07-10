@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from gevent import monkey;monkey.patch_all()
 import logging
 
-from gevent import monkey;monkey.patch_all()
 from json_box import JsonBox
 from kola_request import KolaRequest
 
