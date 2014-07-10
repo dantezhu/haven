@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# -*- coding: utf-8 -*-
-
 from haven import GBlueprint, logger
 
 bp = GBlueprint('user')

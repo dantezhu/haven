@@ -37,15 +37,6 @@ class GHaven(Haven):
     def handle_stream(self, sock, address):
         self.conn_class(self, self.box_class, self.request_class, Stream(sock), address).process()
 
-    def run(self, host, port, debug=False):
-        self.debug = debug
-
-        self.server = self.server_class((host, port), self.handle_stream)
-
-        self._start_repeat_timers()
-
-        self.server.serve_forever()
-
     def repeat_timer(self, interval):
         def inner_repeat_timer(func):
             later = GLater()
@@ -53,6 +44,13 @@ class GHaven(Haven):
             return func
 
         return inner_repeat_timer
+
+    def _run(self, host, port):
+        self.server = self.server_class((host, port), self.handle_stream)
+
+        self._start_repeat_timers()
+
+        self.server.serve_forever()
 
     def _start_repeat_timers(self):
         self.events.repeat_timer()

@@ -23,9 +23,15 @@ class THaven(Haven):
         self.conn_class = conn_class or Connection
         self.request_class = request_class or Request
 
-    def run(self, host, port, debug=False):
-        self.debug = debug
+    def repeat_timer(self, interval):
+        def inner_repeat_timer(func):
+            later = TLater()
+            self.events.repeat_timer += functools.partial(later.set, interval, func, True)
+            return func
 
+        return inner_repeat_timer
+
+    def _run(self, host, port):
         class RequestHandler(StreamRequestHandler):
             def handle(sub_self):
                 self.conn_class(
@@ -44,14 +50,6 @@ class THaven(Haven):
         self._start_repeat_timers()
 
         self.server.serve_forever()
-
-    def repeat_timer(self, interval):
-        def inner_repeat_timer(func):
-            later = TLater()
-            self.events.repeat_timer += functools.partial(later.set, interval, func, True)
-            return func
-
-        return inner_repeat_timer
 
     def _start_repeat_timers(self):
         self.events.repeat_timer()

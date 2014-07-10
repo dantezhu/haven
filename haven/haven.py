@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from .callbacks_mixin import AppCallBacksMixin
+from . import autoreload
 
 
 class Haven(AppCallBacksMixin):
@@ -14,3 +15,18 @@ class Haven(AppCallBacksMixin):
 
     def register_blueprint(self, blueprint):
         blueprint.register2app(self)
+
+    def run(self, host, port, debug=None, use_reloader=None):
+        if debug is not None:
+            self.debug = debug
+
+        if use_reloader is None:
+            use_reloader = self.debug
+
+        if use_reloader:
+            autoreload.main(self._run, (host, port))
+        else:
+            self._run(host, port)
+
+    def _run(self, host, port):
+        raise NotImplementedError
