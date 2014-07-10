@@ -23,7 +23,8 @@ class THaven(Haven):
         self.conn_class = conn_class or Connection
         self.request_class = request_class or Request
 
-    def run(self, host, port):
+    def run(self, host, port, debug=False):
+        self.debug = debug
 
         class RequestHandler(StreamRequestHandler):
             def handle(sub_self):
