@@ -4,6 +4,7 @@ import logging
 
 from gevent import monkey;monkey.patch_all()
 from json_box import JsonBox
+from kola_request import KolaRequest
 
 from haven import GHaven, logger, GLater
 import user
@@ -12,7 +13,7 @@ logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
 
 
-app = GHaven(JsonBox)
+app = GHaven(JsonBox, request_class=KolaRequest)
 
 
 @app.create_conn
