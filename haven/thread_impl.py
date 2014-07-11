@@ -10,7 +10,6 @@ from .request import Request
 from .haven import Haven
 from .blueprint import Blueprint
 from .utils import safe_call
-from .log import logger
 
 
 class THaven(Haven):
@@ -33,8 +32,6 @@ class THaven(Haven):
         return inner_repeat_timer
 
     def _run(self, host, port):
-        logger.info('Running server on %s:%s, debug: %s, use_reloader: %s', host, port, self.debug, self.use_reloader)
-
         class RequestHandler(StreamRequestHandler):
             def handle(sub_self):
                 self.conn_class(
@@ -50,14 +47,7 @@ class THaven(Haven):
         self.server.server_bind()
         self.server.server_activate()
 
-        self._start_repeat_timers()
-
         self.server.serve_forever()
-
-    def _start_repeat_timers(self):
-        self.events.repeat_timer()
-        for bp in self.blueprints:
-            bp.events.repeat_app_timer()
 
 
 class TBlueprint(Blueprint):
