@@ -49,7 +49,7 @@ class Connection(object):
         """
         启动执行
         """
-        # 开始等待数据
+        # while中判断可以保证connection_close事件只触发一次
         while not self.stream.closed():
             self._read_message()
 
@@ -57,7 +57,9 @@ class Connection(object):
         raw_data = self.stream.read_with_checker(self.box_class().check)
         if raw_data:
             self._on_read_complete(raw_data)
-        else:
+
+        # 在这里加上判断，因为如果在处理函数里关闭了conn，会导致无法触发on_connction_close
+        if self.stream.closed():
             self._on_connection_close()
 
     def _on_connection_close(self):
