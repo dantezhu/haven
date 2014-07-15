@@ -6,7 +6,7 @@ import logging
 from json_box import JsonBox
 from kola_request import KolaRequest
 
-from haven import GHaven, logger, GLater
+from haven import GHaven, logger
 import user
 
 logger.addHandler(logging.StreamHandler())
