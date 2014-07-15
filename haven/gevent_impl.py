@@ -39,7 +39,7 @@ class GHaven(Haven):
 
     def repeat_timer(self, interval):
         def inner_repeat_timer(func):
-            later = GLater()
+            later = GTimer()
             self.events.repeat_timer += functools.partial(later.set, interval, func, True)
             return func
 
@@ -55,14 +55,14 @@ class GBlueprint(Blueprint):
 
     def repeat_app_timer(self, interval):
         def inner_repeat_timer(func):
-            later = GLater()
+            later = GTimer()
             self.events.repeat_app_timer += functools.partial(later.set, interval, func, True)
             return func
 
         return inner_repeat_timer
 
 
-class GLater(object):
+class GTimer(object):
 
     timer = None
 

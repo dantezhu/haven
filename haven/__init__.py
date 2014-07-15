@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-__version__ = '1.0.69'
+__version__ = '1.0.70'
 
 from .log import logger
 from .utils import safe_call, safe_func
 
 try:
-    from gevent_impl import GHaven, GBlueprint, GLater
+    from gevent_impl import GHaven, GBlueprint, GTimer
 except:
-    GHaven = GLater = GBlueprint = None
+    GHaven = GBlueprint = GTimer = None
 
-from thread_impl import THaven, TBlueprint, TLater
+from thread_impl import THaven, TBlueprint, TTimer

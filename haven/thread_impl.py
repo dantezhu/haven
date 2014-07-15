@@ -25,7 +25,7 @@ class THaven(Haven):
 
     def repeat_timer(self, interval):
         def inner_repeat_timer(func):
-            later = TLater()
+            later = TTimer()
             self.events.repeat_timer += functools.partial(later.set, interval, func, True)
             return func
 
@@ -54,14 +54,14 @@ class TBlueprint(Blueprint):
 
     def repeat_app_timer(self, interval):
         def inner_repeat_timer(func):
-            later = TLater()
+            later = TTimer()
             self.events.repeat_app_timer += functools.partial(later.set, interval, func, True)
             return func
 
         return inner_repeat_timer
 
 
-class TLater(object):
+class TTimer(object):
 
     timer = None
 

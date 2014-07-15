@@ -45,16 +45,16 @@ def repeat_timer():
 
 @app.route(1)
 def index(request):
-    from haven import TLater
-    later = TLater()
+    from haven import TTimer
+    timer = TTimer()
 
     def x():
         logger.debug('x')
-        later.set(1, y, repeat=True)
+        timer.set(1, y, repeat=True)
 
     def y():
         logger.debug('y')
-        later.set(1, x, repeat=True)
+        timer.set(1, x, repeat=True)
 
     x()
     request.write(dict(ret=100))
