@@ -40,10 +40,10 @@ class Request(object):
     @property
     def blueprint(self):
         cmd_parts = str(self.cmd or '').split('.')
-        bp_prefix, cmd = cmd_parts if len(cmd_parts) == 2 else (None, self.cmd)
+        bp_name, cmd = cmd_parts if len(cmd_parts) == 2 else (None, self.cmd)
 
         for bp in self.app.blueprints:
-            if bp_prefix == bp.prefix and bp.get_route_view_func(cmd):
+            if bp_name == bp.name and bp.get_route_view_func(cmd):
                 return bp
 
         return None

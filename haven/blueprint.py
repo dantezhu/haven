@@ -5,12 +5,12 @@ from .callbacks_mixin import BlueprintCallBacksMixin
 
 class Blueprint(BlueprintCallBacksMixin):
 
-    prefix = None
+    name = None
     app = None
 
-    def __init__(self, prefix=None):
+    def __init__(self, name=None):
         super(Blueprint, self).__init__()
-        self.prefix = prefix
+        self.name = name
 
     def register2app(self, app):
         """
