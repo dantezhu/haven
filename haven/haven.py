@@ -8,7 +8,6 @@ from .log import logger
 
 class Haven(AppCallBacksMixin):
     debug = False
-    use_reloader = None
     got_first_request = False
     blueprints = None
 
@@ -23,11 +22,11 @@ class Haven(AppCallBacksMixin):
         if debug is not None:
             self.debug = debug
 
-        self.use_reloader = use_reloader if use_reloader is not None else self.debug
+        use_reloader = use_reloader if use_reloader is not None else self.debug
 
         def run_wrapper():
             logger.info('Running server on %s:%s, debug: %s, use_reloader: %s',
-                        host, port, self.debug, self.use_reloader)
+                        host, port, self.debug, use_reloader)
             self._start_repeat_timers()
 
             self._prepare_server(host, port)
@@ -46,7 +45,7 @@ class Haven(AppCallBacksMixin):
             else:
                 self._serve_forever()
 
-        if self.use_reloader:
+        if use_reloader:
             autoreload.main(run_wrapper)
         else:
             run_wrapper()
