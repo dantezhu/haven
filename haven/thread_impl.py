@@ -36,7 +36,7 @@ class THaven(Haven):
             def handle(sub_self):
                 self.conn_class(
                     self, self.box_class, self.request_class, Stream(sub_self.connection), sub_self.client_address
-                ).process()
+                ).handle()
 
         self.server = self.server_class((host, port), RequestHandler, bind_and_activate=False)
         # 主线程退出时，所有子线程结束

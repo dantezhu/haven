@@ -45,9 +45,9 @@ class Connection(object):
         """
         self.stream.close(exc_info)
 
-    def process(self):
+    def handle(self):
         """
-        启动执行
+        启动处理
         """
         # while中判断可以保证connection_close事件只触发一次
         while not self.stream.closed():
