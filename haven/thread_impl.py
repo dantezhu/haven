@@ -31,7 +31,7 @@ class THaven(Haven):
 
         return inner_repeat_timer
 
-    def _run(self, host, port):
+    def _prepare_server(self, host, port):
         class RequestHandler(StreamRequestHandler):
             def handle(sub_self):
                 self.conn_class(
@@ -47,6 +47,7 @@ class THaven(Haven):
         self.server.server_bind()
         self.server.server_activate()
 
+    def _serve_forever(self):
         self.server.serve_forever()
 
 

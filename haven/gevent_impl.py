@@ -45,9 +45,11 @@ class GHaven(Haven):
 
         return inner_repeat_timer
 
-    def _run(self, host, port):
+    def _prepare_server(self, host, port):
         self.server = self.server_class((host, port), self.handle_stream)
+        self.server.start()
 
+    def _serve_forever(self):
         self.server.serve_forever()
 
 

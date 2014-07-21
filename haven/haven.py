@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from multiprocessing import Process
 from .callbacks_mixin import AppCallBacksMixin
 from . import autoreload
 from .log import logger
@@ -18,7 +19,7 @@ class Haven(AppCallBacksMixin):
     def register_blueprint(self, blueprint):
         blueprint.register2app(self)
 
-    def run(self, host, port, debug=None, use_reloader=None):
+    def run(self, host, port, debug=None, use_reloader=None, workers=None):
         if debug is not None:
             self.debug = debug
 
@@ -29,7 +30,18 @@ class Haven(AppCallBacksMixin):
                         host, port, self.debug, self.use_reloader)
             self._start_repeat_timers()
 
-            self._run(host, port)
+            self._prepare_server(host, port)
+            if workers is not None:
+                proc_list = []
+                for it in range(0, workers):
+                    p = Process(self._serve_forever)
+                    p.start()
+                    proc_list.append(p)
+
+                for it in proc_list:
+                    it.join()
+            else:
+                self._serve_forever()
 
         if self.use_reloader:
             autoreload.main(run_wrapper)
@@ -39,7 +51,10 @@ class Haven(AppCallBacksMixin):
     def repeat_timer(self, interval):
         raise NotImplementedError
 
-    def _run(self, host, port):
+    def _prepare_server(self, host, port):
+        raise NotImplementedError
+
+    def _serve_forever(self):
         raise NotImplementedError
 
     def _start_repeat_timers(self):
