@@ -26,7 +26,7 @@ stream.write(box.pack())
 
 while True:
     # 阻塞
-    buf = stream.read_with_checker(Box().unpack)
+    buf = stream.read_with_checker(Box().check)
 
     if buf:
         box2 = Box()

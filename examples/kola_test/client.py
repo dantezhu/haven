@@ -26,7 +26,7 @@ stream.write(box.pack())
 
 while True:
     # 阻塞
-    buf = stream.read_with_checker(JsonBox().unpack)
+    buf = stream.read_with_checker(JsonBox().check)
 
     if buf:
         box2 = JsonBox()
