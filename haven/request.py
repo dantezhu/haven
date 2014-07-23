@@ -37,10 +37,6 @@ class Request(object):
             logger.error('unpack fail. request: %s', self)
             return False
 
-    @property
-    def app(self):
-        return self.conn.app
-
     def _parse_blueprint_info(self):
         cmd_parts = str(self.cmd or '').split('.')
         self.blueprint_name, self.blueprint_cmd = cmd_parts if len(cmd_parts) == 2 else (None, self.cmd)
@@ -49,6 +45,10 @@ class Request(object):
             if self.blueprint_name == bp.name and bp.get_route_view_func(self.blueprint_cmd):
                 self.blueprint = bp
                 break
+
+    @property
+    def app(self):
+        return self.conn.app
 
     @property
     def address(self):
