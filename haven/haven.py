@@ -41,9 +41,15 @@ class Haven(AppCallBacksMixin):
                     proc_list.append(p)
 
                 for it in proc_list:
-                    it.join()
+                    try:
+                        it.join()
+                    except KeyboardInterrupt:
+                        pass
             else:
-                self._serve_forever()
+                try:
+                    self._serve_forever()
+                except KeyboardInterrupt:
+                    pass
 
         if use_reloader:
             autoreload.main(run_wrapper)
