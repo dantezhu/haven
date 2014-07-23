@@ -45,11 +45,10 @@ class Haven(AppCallBacksMixin):
                         it.join()
                     except KeyboardInterrupt:
                         pass
+                    except:
+                        logger.error('exc occur.', exc_info=True)
             else:
-                try:
-                    self._try_serve_forever()
-                except KeyboardInterrupt:
-                    pass
+                self._try_serve_forever()
 
         if use_reloader:
             autoreload.main(run_wrapper)
@@ -64,6 +63,8 @@ class Haven(AppCallBacksMixin):
             self._serve_forever()
         except KeyboardInterrupt:
             pass
+        except:
+            logger.error('exc occur.', exc_info=True)
 
     def _prepare_server(self, host, port):
         raise NotImplementedError
