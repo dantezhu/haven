@@ -13,6 +13,9 @@ class Request(object):
     raw_data = None
     box = None
     is_valid = False
+    blueprint = None
+    blueprint_name = None
+    blueprint_cmd = None
 
     def __init__(self, conn, box_class, raw_data):
         self.conn = conn
@@ -28,6 +31,7 @@ class Request(object):
             return False
 
         if self.box.unpack(self.raw_data) > 0:
+            self._parse_blueprint_info()
             return True
         else:
             logger.error('unpack fail. request: %s', self)
@@ -37,21 +41,14 @@ class Request(object):
     def app(self):
         return self.conn.app
 
-    @property
-    def blueprint(self):
+    def _parse_blueprint_info(self):
         cmd_parts = str(self.cmd or '').split('.')
-        bp_name, cmd = cmd_parts if len(cmd_parts) == 2 else (None, self.cmd)
+        self.blueprint_name, self.blueprint_cmd = cmd_parts if len(cmd_parts) == 2 else (None, self.cmd)
 
         for bp in self.app.blueprints:
-            if bp_name == bp.name and bp.get_route_view_func(cmd):
-                return bp
-
-        return None
-
-    @property
-    def blueprint_cmd(self):
-        cmd_parts = str(self.cmd or '').split('.')
-        return cmd_parts[1] if len(cmd_parts) == 2 else self.cmd
+            if self.blueprint_name == bp.name and bp.get_route_view_func(self.blueprint_cmd):
+                self.blueprint = bp
+                break
 
     @property
     def address(self):
