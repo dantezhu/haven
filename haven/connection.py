@@ -18,7 +18,7 @@ class Connection(object):
 
     def write(self, data):
         """
-        发送数据    0: 成功   else: fail
+        发送数据    True: 成功   else: 失败
         """
         if self.stream.closed():
             return
