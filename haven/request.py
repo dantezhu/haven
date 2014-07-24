@@ -68,7 +68,7 @@ class Request(object):
         return self.conn.write(data)
 
     def close(self, exc_info=False):
-        return self.conn.close(exc_info)
+        self.conn.close(exc_info)
 
     def __repr__(self):
         return repr(self.raw_data)
