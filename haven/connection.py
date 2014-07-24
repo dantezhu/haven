@@ -18,7 +18,7 @@ class Connection(object):
 
     def write(self, data):
         """
-        发送数据
+        发送数据    0: 成功   else: fail
         """
         if self.stream.closed():
             return
@@ -33,11 +33,13 @@ class Connection(object):
         for bp in self.app.blueprints:
             bp.events.before_app_response(self, data)
 
-        self.stream.write(data)
+        ret = self.stream.write(data)
 
         for bp in self.app.blueprints:
             bp.events.after_app_response(self, data)
         self.app.events.after_response(self, data)
+
+        return ret
 
     def close(self, exc_info=False):
         """
