@@ -3,11 +3,11 @@
 from netkit.line_box import LineBox
 
 
-class JsonBox(LineBox):
+class KolaBox(LineBox):
 
     def __init__(self, init_data=None):
         # 不要让顶层初始化init_data
-        super(JsonBox, self).__init__(None)
+        super(KolaBox, self).__init__(None)
 
         if init_data:
             self.set_json(init_data)
