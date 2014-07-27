@@ -98,10 +98,19 @@ class Connection(object):
             return None
 
         if not self.app.got_first_request:
-            self.app.got_first_request = True
-            self.app.events.before_first_request(request)
-            for bp in self.app.blueprints:
-                bp.events.before_app_first_request(request)
+            real_got_first_request = False
+
+            # 加锁
+            self.app.got_first_request_lock.acquire()
+            if not self.app.got_first_request:
+                self.app.got_first_request = True
+                real_got_first_request = True
+            self.app.got_first_request_lock.release()
+
+            if real_got_first_request:
+                self.app.events.before_first_request(request)
+                for bp in self.app.blueprints:
+                    bp.events.before_app_first_request(request)
 
         self.app.events.before_request(request)
         for bp in self.app.blueprints:

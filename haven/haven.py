@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from multiprocessing import Process
+from threading import Lock
 from .callbacks_mixin import AppCallBacksMixin
 from . import autoreload
 from .log import logger
@@ -9,10 +10,12 @@ from .log import logger
 class Haven(AppCallBacksMixin):
     debug = False
     got_first_request = False
+    got_first_request_lock = None
     blueprints = None
 
     def __init__(self):
         super(Haven, self).__init__()
+        self.got_first_request_lock = Lock()
         self.blueprints = list()
 
     def register_blueprint(self, blueprint):
