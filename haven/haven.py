@@ -2,6 +2,8 @@
 
 from multiprocessing import Process
 from threading import Lock
+import time
+import signal
 from .callbacks_mixin import AppCallBacksMixin
 from . import autoreload
 from .log import logger
@@ -36,22 +38,31 @@ class Haven(AppCallBacksMixin):
             if workers is not None:
                 proc_list = []
                 for it in xrange(0, workers):
-                    p = Process(target=self._try_serve_forever)
+                    p = Process(target=self._try_serve_forever, args=(False,))
                     # 当前进程_daemonic默认是False，改成True将启动不了子进程
                     # 但是子进程要设置_daemonic为True，这样父进程退出，子进程会被强制关闭
                     p.daemon = True
                     p.start()
                     proc_list.append(p)
 
-                for it in proc_list:
+                while True:
+                    if not filter(lambda x: x, proc_list):
+                        # 子进程已经全死了
+                        break
+
+                    for idx, it in enumerate(proc_list):
+                        if it and not it.is_alive():
+                            logger.error('process[%s] dead.', it.pid)
+                            proc_list[idx] = None
+
                     try:
-                        it.join()
+                        time.sleep(1)
                     except KeyboardInterrupt:
                         pass
                     except:
                         logger.error('exc occur.', exc_info=True)
             else:
-                self._try_serve_forever()
+                self._try_serve_forever(True)
 
         if use_reloader:
             autoreload.main(run_wrapper)
@@ -61,7 +72,10 @@ class Haven(AppCallBacksMixin):
     def repeat_timer(self, interval):
         raise NotImplementedError
 
-    def _try_serve_forever(self):
+    def _try_serve_forever(self, main_process):
+        if not main_process:
+            self._handle_child_proc_signals()
+
         try:
             self._serve_forever()
         except KeyboardInterrupt:
@@ -69,13 +83,17 @@ class Haven(AppCallBacksMixin):
         except:
             logger.error('exc occur.', exc_info=True)
 
-    def _prepare_server(self, host, port):
-        raise NotImplementedError
-
-    def _serve_forever(self):
-        raise NotImplementedError
+    def _handle_child_proc_signals(self):
+        signal.signal(signal.SIGTERM, signal.SIG_DFL)
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
 
     def _start_repeat_timers(self):
         self.events.repeat_timer()
         for bp in self.blueprints:
             bp.events.repeat_app_timer()
+
+    def _prepare_server(self, host, port):
+        raise NotImplementedError
+
+    def _serve_forever(self):
+        raise NotImplementedError
