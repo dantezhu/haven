@@ -39,7 +39,7 @@ class Haven(AppCallBacksMixin):
                     p = Process(target=self._try_serve_forever)
                     # 当前进程_daemonic默认是False，改成True将启动不了子进程
                     # 但是子进程要设置_daemonic为True，这样父进程退出，子进程会被强制关闭
-                    p._daemonic = True
+                    p.daemon = True
                     p.start()
                     proc_list.append(p)
 
