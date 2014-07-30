@@ -58,9 +58,10 @@ class Haven(AppCallBacksMixin):
                     try:
                         time.sleep(1)
                     except KeyboardInterrupt:
-                        pass
+                        break
                     except:
                         logger.error('exc occur.', exc_info=True)
+                        break
             else:
                 self._try_serve_forever(True)
 
