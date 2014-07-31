@@ -63,9 +63,9 @@ class Connection(object):
             self._read_message()
 
     def _read_message(self):
-        raw_data = self.stream.read_with_checker(self.box_class().check)
-        if raw_data:
-            self._on_read_complete(raw_data)
+        data = self.stream.read_with_checker(self.box_class().check)
+        if data:
+            self._on_read_complete(data)
 
         # 在这里加上判断，因为如果在处理函数里关闭了conn，会导致无法触发on_connction_close
         if self.stream.closed():
@@ -79,12 +79,11 @@ class Connection(object):
             bp.events.close_app_conn(self)
         self.app.events.close_conn(self)
 
-    def _on_read_complete(self, raw_data):
+    def _on_read_complete(self, data):
         """
         数据获取结束
         """
-        logger.debug('raw_data: %r', raw_data)
-        request = self.request_class(self, self.box_class, raw_data)
+        request = self.request_class(self, self.box_class, data)
         self._handle_request(request)
 
     def _handle_request(self, request):
