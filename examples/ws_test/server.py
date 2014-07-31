@@ -18,7 +18,7 @@ flask_app = Flask(__name__)
 def http():
     return u'http ok'
 
-app = WSHaven('/echo', flask_app, KolaBox)
+app = WSHaven(KolaBox, '/echo', flask_app)
 
 
 @app.route(1)
