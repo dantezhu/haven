@@ -33,7 +33,8 @@ class Haven(AppCallBacksMixin):
         def run_wrapper():
             logger.info('Running server on %s:%s, debug: %s, use_reloader: %s',
                         host, port, self.debug, use_reloader)
-            self._start_repeat_timers()
+
+            self._before_run()
 
             self._prepare_server(host, port)
             if workers is not None:
@@ -52,6 +53,9 @@ class Haven(AppCallBacksMixin):
 
     def repeat_timer(self, interval):
         raise NotImplementedError
+
+    def _before_run(self):
+        self._start_repeat_timers()
 
     def _try_serve_forever(self, main_process):
         if not main_process:
