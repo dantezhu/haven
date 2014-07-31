@@ -7,7 +7,7 @@ bp = GBlueprint('user')
 
 @bp.route()
 def login(request):
-    request.write(dict(ret=11))
+    request.write(dict(ret=11, address=request.address))
 
 @bp.create_app_conn
 def create_app_conn(conn):

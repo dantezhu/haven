@@ -7,7 +7,7 @@ bp = TBlueprint()
 
 @bp.route(101)
 def login(request):
-    request.write(dict(ret=101))
+    request.write(dict(ret=101, body=repr(request.address)))
 
 @bp.create_app_conn
 def create_app_conn(conn):

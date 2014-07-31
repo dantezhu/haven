@@ -25,8 +25,19 @@ app = WSHaven('/echo', flask_app, KolaBox)
 def index(request):
     request.write(dict(
         ret=1,
-        body='ok haha'
+        body='ok haha',
+        address=request.address,
     ))
+
+
+@app.repeat_timer(60)
+def timer():
+    logger.debug('timer')
+
+
+if __name__ != '__main__':
+    # 启动timer之类的
+    app._before_run()
 
 if __name__ == '__main__':
     app.run('127.0.0.1', 8000, workers=2)
