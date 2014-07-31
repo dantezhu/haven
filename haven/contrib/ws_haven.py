@@ -78,6 +78,9 @@ class WSHaven(GHaven):
 
         return new_wsgi
 
+    def __call__(self, *args, **kwargs):
+        return self.wsgi()
+
     def _prepare_server(self, host, port):
         self.server = gevent.wsgi.WSGIServer((host, port), self.wsgi(), handler_class=WebSocketHandler)
 
