@@ -41,32 +41,7 @@ class Haven(AppCallBacksMixin):
                     # 因为只能在主线程里面设置signals
                     self._handle_parent_proc_signals()
 
-                proc_list = []
-                for it in xrange(0, workers):
-                    p = Process(target=self._try_serve_forever, args=(False,))
-                    # 当前进程daemon默认是False，改成True将启动不了子进程
-                    # 但是子进程要设置daemon为True，这样父进程退出，子进程会被强制关闭
-                    p.daemon = True
-                    p.start()
-                    proc_list.append(p)
-
-                while True:
-                    if not filter(lambda x: x, proc_list):
-                        # 子进程已经全死了
-                        break
-
-                    for idx, it in enumerate(proc_list):
-                        if it and not it.is_alive():
-                            logger.error('process[%s] dead.', it.pid)
-                            proc_list[idx] = None
-
-                    try:
-                        time.sleep(1)
-                    except KeyboardInterrupt:
-                        break
-                    except:
-                        logger.error('exc occur.', exc_info=True)
-                        break
+                self._fork_workers(workers)
             else:
                 self._try_serve_forever(True)
 
@@ -88,6 +63,38 @@ class Haven(AppCallBacksMixin):
             pass
         except:
             logger.error('exc occur.', exc_info=True)
+
+    def _fork_workers(self, workers):
+        def start_worker_process():
+            inner_p = Process(target=self._try_serve_forever, args=(False,))
+            # 当前进程daemon默认是False，改成True将启动不了子进程
+            # 但是子进程要设置daemon为True，这样父进程退出，子进程会被强制关闭
+            inner_p.daemon = True
+            inner_p.start()
+            return inner_p
+
+        p_list = []
+
+        for it in xrange(0, workers):
+            p = start_worker_process()
+            p_list.append(p)
+
+        while True:
+            for idx, p in enumerate(p_list):
+                if not p.is_alive():
+                    old_pid = p.pid
+                    p = start_worker_process()
+                    p_list[idx] = p
+
+                    logger.error('process[%s] dead. start new process[%s]', old_pid, p.pid)
+
+            try:
+                time.sleep(1)
+            except KeyboardInterrupt:
+                break
+            except:
+                logger.error('exc occur.', exc_info=True)
+                break
 
     def _handle_parent_proc_signals(self):
         # 修改SIGTERM，否则父进程被term，子进程不会自动退出；明明子进程都设置为daemon了的
