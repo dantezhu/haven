@@ -73,7 +73,6 @@ class Connection(object):
 
     def _on_connection_close(self):
         # 链接被关闭的回调
-        logger.debug('socket closed')
 
         for bp in self.app.blueprints:
             bp.events.close_app_conn(self)

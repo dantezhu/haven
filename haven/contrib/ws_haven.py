@@ -80,6 +80,7 @@ class WSHaven(GHaven):
 
     def _prepare_server(self, host, port):
         self.server = gevent.wsgi.WSGIServer((host, port), self.wsgi_app, handler_class=WebSocketHandler)
+        self.server.start()
 
     def _serve_forever(self):
         self.server.serve_forever()
