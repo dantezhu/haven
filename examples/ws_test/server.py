@@ -4,8 +4,16 @@ from gevent import monkey; monkey.patch_all()
 
 from haven.contrib.ws_haven import WSHaven
 from kola_box import KolaBox
+from flask import Flask
 
-app = WSHaven('/echo', None, KolaBox)
+flask_app = Flask(__name__)
+
+
+@flask_app.route('/http')
+def http():
+    return u'http ok'
+
+app = WSHaven('/echo', flask_app, KolaBox)
 
 
 @app.route(1)
