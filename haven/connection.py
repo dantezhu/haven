@@ -47,6 +47,13 @@ class Connection(object):
         """
         self.stream.close(exc_info)
 
+    def closed(self):
+        """
+        连接是否已经关闭
+        :return:
+        """
+        return self.stream.closed()
+
     def handle(self):
         """
         启动处理
