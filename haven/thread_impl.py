@@ -16,12 +16,13 @@ class THaven(Haven):
 
     server = None
 
-    def __init__(self, box_class, server_class=None, connection_class=None, request_class=None):
+    def __init__(self, box_class, server_class=None, connection_class=None, request_class=None, stream_class=None):
         super(THaven, self).__init__()
         self.box_class = box_class
         self.server_class = server_class or ThreadingTCPServer
         self.connection_class = connection_class or Connection
         self.request_class = request_class or Request
+        self.stream_class = stream_class or Stream
 
     def repeat_timer(self, interval):
         def inner_repeat_timer(func):
@@ -35,7 +36,7 @@ class THaven(Haven):
         class RequestHandler(StreamRequestHandler):
             def handle(sub_self):
                 self.connection_class(
-                    self, self.box_class, self.request_class, Stream(sub_self.connection), sub_self.client_address
+                    self, self.box_class, self.request_class, self.stream_class(sub_self.connection), sub_self.client_address
                 ).handle()
 
         self.server = self.server_class((host, port), RequestHandler, bind_and_activate=False)

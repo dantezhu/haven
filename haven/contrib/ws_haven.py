@@ -50,12 +50,12 @@ class WSStream(Stream):
 class WSHaven(GHaven):
 
     def __init__(self, path_pattern, merge_wsgi_app, *args, **kwargs):
+        if not kwargs.get('stream_class'):
+            kwargs['stream_class'] = WSStream
         super(WSHaven, self).__init__(*args, **kwargs)
+
         self.path_pattern = path_pattern
         self.merge_wsgi_app = merge_wsgi_app
-
-    def handle_stream(self, sock, address):
-        self.connection_class(self, self.box_class, self.request_class, WSStream(sock), address).handle()
 
     def wsgi_app(self, environ, start_response):
         """
