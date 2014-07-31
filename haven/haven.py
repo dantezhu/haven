@@ -89,14 +89,20 @@ class Haven(AppCallBacksMixin):
             logger.error('exc occur.', exc_info=True)
 
     def _handle_parent_proc_signals(self):
-        # 修改SIGTERM，否则父进程被term，子进程不会自动退出；明明子进程都设置为daemon了的
-        signal.signal(signal.SIGTERM, signal.default_int_handler)
-        # 即使对于SIGINT，SIG_DFL和default_int_handler也是不一样的，要是想要抛出KeyboardInterrupt，应该用default_int_handler
-        signal.signal(signal.SIGINT, signal.default_int_handler)
+        try:
+            # 修改SIGTERM，否则父进程被term，子进程不会自动退出；明明子进程都设置为daemon了的
+            signal.signal(signal.SIGTERM, signal.default_int_handler)
+            # 即使对于SIGINT，SIG_DFL和default_int_handler也是不一样的，要是想要抛出KeyboardInterrupt，应该用default_int_handler
+            signal.signal(signal.SIGINT, signal.default_int_handler)
+        except Exception, e:
+            logger.error('handle_signals fail. e: %s', e)
 
     def _handle_child_proc_signals(self):
-        signal.signal(signal.SIGTERM, signal.SIG_DFL)
-        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        try:
+            signal.signal(signal.SIGTERM, signal.SIG_DFL)
+            signal.signal(signal.SIGINT, signal.SIG_IGN)
+        except Exception, e:
+            logger.error('handle_signals fail. e: %s', e)
 
     def _start_repeat_timers(self):
         self.events.repeat_timer()
