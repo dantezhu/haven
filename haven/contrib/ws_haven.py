@@ -49,10 +49,11 @@ class WSStream(Stream):
 
 class WSHaven(GHaven):
 
-    def __init__(self, path_pattern, merge_wsgi_app, *args, **kwargs):
+    def __init__(self, box_class, path_pattern, merge_wsgi_app=None, **kwargs):
+        # 去掉*args，即可避免stream_class在*args的情况
         if not kwargs.get('stream_class'):
             kwargs['stream_class'] = WSStream
-        super(WSHaven, self).__init__(*args, **kwargs)
+        super(WSHaven, self).__init__(box_class, **kwargs)
 
         self.path_pattern = path_pattern
         self.merge_wsgi_app = merge_wsgi_app
