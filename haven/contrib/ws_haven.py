@@ -49,40 +49,37 @@ class WSStream(Stream):
 
 class WSHaven(GHaven):
 
-    def __init__(self, path_pattern, wsgi_app, *args, **kwargs):
+    def __init__(self, path_pattern, merge_wsgi_app, *args, **kwargs):
         super(WSHaven, self).__init__(*args, **kwargs)
         self.path_pattern = path_pattern
-        self.wsgi_app = wsgi_app
+        self.merge_wsgi_app = merge_wsgi_app
 
     def handle_stream(self, sock, address):
         self.connection_class(self, self.box_class, self.request_class, WSStream(sock), address).handle()
 
-    def wsgi(self):
+    def wsgi_app(self, environ, start_response):
         """
         将原始的app，包装为包括websocket的app
         """
-        def new_wsgi(environ, start_response):
 
-            path = environ['PATH_INFO']
+        path = environ['PATH_INFO']
 
-            if re.match(self.path_pattern, path):
-                ws = environ['wsgi.websocket']
-                address = environ.get('REMOTE_ADDR')
-                self.handle_stream(ws, address)
+        if re.match(self.path_pattern, path):
+            ws = environ['wsgi.websocket']
+            address = environ.get('REMOTE_ADDR')
+            self.handle_stream(ws, address)
+        else:
+            if self.merge_wsgi_app:
+                return self.merge_wsgi_app(environ, start_response)
             else:
-                if self.wsgi_app:
-                    return self.wsgi_app(environ, start_response)
-                else:
-                    start_response("400 Bad Request", [])
-                    return ['400 Bad Request']
+                start_response("400 Bad Request", [])
+                return ['400 Bad Request']
 
-        return new_wsgi
-
-    def __call__(self, *args, **kwargs):
-        return self.wsgi()
+    def __call__(self, environ, start_response):
+        return self.wsgi_app(environ, start_response)
 
     def _prepare_server(self, host, port):
-        self.server = gevent.wsgi.WSGIServer((host, port), self.wsgi(), handler_class=WebSocketHandler)
+        self.server = gevent.wsgi.WSGIServer((host, port), self.wsgi_app, handler_class=WebSocketHandler)
 
     def _serve_forever(self):
         self.server.serve_forever()
