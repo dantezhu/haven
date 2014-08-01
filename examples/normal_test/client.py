@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
 
 
-from netkit.box import Box
 from netkit.stream import Stream
+from reimp import Box
 
 import time
-import logging
 import socket
-
-logger = logging.getLogger('netkit')
-logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.DEBUG)
 
 address = ('127.0.0.1', 7777)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -19,14 +14,24 @@ s.connect(address)
 stream = Stream(s)
 
 box = Box()
-box.cmd = 101
-box.body = '我爱你'
+if hasattr(box, 'set_json'):
+    box.set_json(dict(
+        endpoint=101,
+        body=u'我爱你'
+    ))
+else:
+    box.cmd = 101
+    box.body = '我爱你'
 
 stream.write(box.pack())
+
+t1 = time.time()
 
 while True:
     # 阻塞
     buf = stream.read_with_checker(Box().check)
+
+    print 'time past: ', time.time() - t1
 
     if buf:
         box2 = Box()
