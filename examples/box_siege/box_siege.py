@@ -11,12 +11,14 @@ from reimp import Box
 import time
 import socket
 
-run_times = 0
-past_time = 0.0
+all_run_times = 0
+
+calc_users_count = 0
+avg_qps_sum = 0
 
 
 def user_connect(user_idx, reps, url):
-    global run_times, past_time
+    global all_run_times, avg_qps_sum, calc_users_count
 
     host, port = url.split(':')
     address = (host, int(port))
@@ -34,9 +36,11 @@ def user_connect(user_idx, reps, url):
         box.cmd = 101
         box.body = '我爱你'
 
-    t1 = time.time()
     send_buf = box.pack()
+    run_times = 0
+    t1 = time.time()
     for it in xrange(0, reps):
+        all_run_times += 1
         run_times += 1
         stream.write(send_buf)
         recv_buf = stream.read_with_checker(Box().check)
@@ -44,7 +48,12 @@ def user_connect(user_idx, reps, url):
             click.secho('user[%s] socket closed' % user_idx, fg='red')
             break
 
-    past_time += (time.time() - t1)
+    past_time = (time.time() - t1)
+    qps = run_times / past_time
+    print run_times, past_time, qps
+    calc_users_count += 1
+    avg_qps_sum += qps
+
     s.close()
 
 
@@ -63,11 +72,8 @@ def main(concurrent, reps, url):
 
     gevent.joinall(jobs)
 
-    if past_time != 0:
-        qps = run_times / past_time
-    else:
-        qps = 0
-    click.secho('jobs over. run_times: %s, past_time: %s, qps: %s' % (run_times, past_time, qps), fg='yellow')
+    qps = avg_qps_sum / calc_users_count
+    click.secho('jobs over. run_times: %s, qps: %s' % (all_run_times, qps), fg='yellow')
 
 if __name__ == '__main__':
     main()
