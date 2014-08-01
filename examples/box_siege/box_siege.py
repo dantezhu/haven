@@ -72,7 +72,10 @@ def main(concurrent, reps, url):
 
     gevent.joinall(jobs)
 
-    qps = avg_qps_sum / calc_users_count
+    if calc_users_count != 0:
+        qps = avg_qps_sum / calc_users_count
+    else:
+        qps = 0
     click.secho('jobs over. run_times: %s, qps: %s' % (all_run_times, qps), fg='yellow')
 
 if __name__ == '__main__':
