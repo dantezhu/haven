@@ -56,7 +56,7 @@ def index(request):
         logger.debug('y')
         timer.set(1, x, repeat=True)
 
-    x()
+    # x()
     request.write(dict(ret=100))
 
 app.register_blueprint(user.bp)
