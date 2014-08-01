@@ -37,14 +37,16 @@ class WSStream(Stream):
     def close_fd(self):
         try:
             self.sock.close()
+        except:
+            logger.error('exc occur.', exc_info=True)
         finally:
             self.sock = None
 
     def shutdown_fd(self, how=2):
         try:
             self.sock.stream.handler.socket.shutdown(how)
-        finally:
-            pass
+        except:
+            logger.error('exc occur.', exc_info=True)
 
 
 class WSGHaven(GHaven):
