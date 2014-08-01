@@ -15,9 +15,11 @@ run_times = 0
 past_time = 0.0
 
 
-def user_connect(user_idx, reps):
+def user_connect(user_idx, reps, url):
     global run_times, past_time
-    address = ('127.0.0.1', 7777)
+
+    host, port = url.split(':')
+    address = (host, int(port))
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(address)
 
@@ -49,13 +51,14 @@ def user_connect(user_idx, reps):
 @click.command()
 @click.argument('concurrent', type=int)
 @click.argument('reps', type=int)
-def main(concurrent, reps):
+@click.argument('url', default='127.0.0.1:7777')
+def main(concurrent, reps, url):
     click.secho('concurrent: %s, reps: %s' % (concurrent, reps), fg='green')
 
     jobs = []
 
     for it in xrange(0, concurrent):
-        job = gevent.spawn(user_connect, it, reps)
+        job = gevent.spawn(user_connect, it, reps, url)
         jobs.append(job)
 
     gevent.joinall(jobs)
