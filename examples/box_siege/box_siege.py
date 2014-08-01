@@ -22,8 +22,12 @@ def user_connect(user_idx, reps, url):
 
     host, port = url.split(':')
     address = (host, int(port))
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(address)
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(address)
+    except:
+        click.secho('user[%s] socket connect fail' % user_idx, fg='red')
+        return
 
     stream = Stream(s)
     box = Box()
