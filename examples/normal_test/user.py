@@ -2,7 +2,7 @@
 
 from reimp import Blueprint, logger
 
-bp = Blueprint()
+bp = Blueprint('user')
 
 
 @bp.route(101)
