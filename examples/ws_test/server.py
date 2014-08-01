@@ -2,7 +2,7 @@
 
 from gevent import monkey; monkey.patch_all()
 
-from haven.contrib.ws_haven import WSHaven
+from haven.contrib.websocket_gevent_impl import WSGHaven
 from kola_box import KolaBox
 from flask import Flask
 from haven import logger
@@ -18,7 +18,7 @@ flask_app = Flask(__name__)
 def http():
     return u'http ok'
 
-app = WSHaven(KolaBox, '/echo', flask_app)
+app = WSGHaven(KolaBox, '/echo', flask_app)
 
 
 @app.route(1)

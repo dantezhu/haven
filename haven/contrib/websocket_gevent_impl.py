@@ -8,8 +8,8 @@ import re
 import gevent.wsgi
 from geventwebsocket.handler import WebSocketHandler
 from netkit.stream import Stream
-from .. import logger
-from .. import GHaven
+from haven import logger
+from haven import GHaven
 
 
 class WSStream(Stream):
@@ -47,13 +47,13 @@ class WSStream(Stream):
             pass
 
 
-class WSHaven(GHaven):
+class WSGHaven(GHaven):
 
     def __init__(self, box_class, path_pattern, merge_wsgi_app=None, **kwargs):
         # 去掉*args，即可避免stream_class在*args的情况
         if not kwargs.get('stream_class'):
             kwargs['stream_class'] = WSStream
-        super(WSHaven, self).__init__(box_class, **kwargs)
+        super(WSGHaven, self).__init__(box_class, **kwargs)
 
         self.path_pattern = path_pattern
         self.merge_wsgi_app = merge_wsgi_app
