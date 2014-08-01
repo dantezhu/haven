@@ -19,7 +19,7 @@ class RoutesMixin(object):
     def add_route_rule(self, cmd=None, view_func=None, **options):
         assert view_func is not None, 'expected view func if cmd is not provided.'
 
-        cmd = cmd or view_func.__name__
+        cmd = cmd if cmd is not None else view_func.__name__
 
         if cmd in self.rule_map and view_func != self.rule_map[cmd]:
             raise Exception, 'duplicate view_func for cmd: %(cmd)s, old_view_func:%(old_view_func)s, new_view_func: %(new_view_func)s' % dict(
