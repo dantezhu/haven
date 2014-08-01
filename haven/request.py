@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import numbers
 from .log import logger
 
 
@@ -38,13 +39,18 @@ class Request(object):
             return False
 
     def _parse_blueprint_info(self):
-        cmd_parts = str(self.cmd or '').split('.')
+        if self.cmd is None:
+            return
+
+        cmd_parts = str(self.cmd).split('.')
         self.blueprint_name, self.blueprint_cmd = cmd_parts if len(cmd_parts) == 2 else (None, self.cmd)
 
         for bp in self.app.blueprints:
-            if self.blueprint_name == bp.name and bp.get_route_view_func(self.blueprint_cmd):
-                self.blueprint = bp
-                break
+            if self.blueprint_name == bp.name or isinstance(self.blueprint_cmd, numbers.Number):
+                # blueprint name 匹配; 或者cmd是数字类型，即与blueprint name无关
+                if bp.get_route_view_func(self.blueprint_cmd):
+                    self.blueprint = bp
+                    break
 
     @property
     def app(self):
