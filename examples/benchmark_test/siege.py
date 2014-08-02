@@ -41,11 +41,11 @@ class Siege(object):
     # 失败请求数，因为connect失败导致没发的请求也算在这里. 这3个值没有绝对的相等关系
     failed_transactions = 0
 
-    def __init__(self, concurrent, reps, url, remote_cmd, socket_type):
+    def __init__(self, concurrent, reps, url, msg_cmd, socket_type):
         self.concurrent = concurrent
         self.reps = reps
         self.url = url
-        self.remote_cmd = remote_cmd
+        self.msg_cmd = msg_cmd
         self.socket_type = socket_type
 
     def make_stream(self):
@@ -75,10 +75,10 @@ class Siege(object):
         box = Box()
         if hasattr(box, 'set_json'):
             box.set_json(dict(
-                endpoint=self.remote_cmd,
+                endpoint=self.msg_cmd,
             ))
         else:
-            box.cmd = self.remote_cmd
+            box.cmd = self.msg_cmd
 
         send_buf = box.pack()
         for it in xrange(0, self.reps):
@@ -147,10 +147,10 @@ class Siege(object):
 @click.option('--concurrent', '-c', type=int, default=10, help='CONCURRENT users, default is 10')
 @click.option('--reps', '-r', type=int, default=10, help='REPS, number of times to run the test.')
 @click.option('--url', '-u', default='127.0.0.1:7777', help='URL, like 127.0.0.1:7777, ws://127.0.0.1:8000/echo')
-@click.option('--remote_cmd', '-m', default=1, type=int, help='REMOTE_CMD, 1')
+@click.option('--msg_cmd', '-m', default=1, type=int, help='REMOTE_CMD, 1')
 @click.option('--socket_type', '-t', default='socket', help='SOCKET_TYPE, socket/websocket')
-def main(concurrent, reps, url, remote_cmd, socket_type):
-    siege = Siege(concurrent, reps, url, remote_cmd, socket_type)
+def main(concurrent, reps, url, msg_cmd, socket_type):
+    siege = Siege(concurrent, reps, url, msg_cmd, socket_type)
     siege.run()
     click.secho('done', fg='green')
     click.secho('Transactions:              %-10d hits' % siege.transactions)
