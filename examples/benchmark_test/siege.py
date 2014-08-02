@@ -12,6 +12,24 @@ import time
 import socket
 
 
+class WSClientStream(object):
+    """
+    websocket的封装
+    """
+
+    def __init__(self, sock):
+        self.sock = sock
+
+    def write(self, *args, **kwargs):
+        return self.sock.send(*args, **kwargs)
+
+    def read_with_checker(self, *args, **kwargs):
+        return self.sock.recv()
+
+    def close(self, *args, **kwargs):
+        return self.sock.close(*args, **kwargs)
+
+
 class Siege(object):
 
     # 经过的时间
@@ -23,26 +41,37 @@ class Siege(object):
     # 失败请求数，因为connect失败导致没发的请求也算在这里. 这3个值没有绝对的相等关系
     failed_transactions = 0
 
-    def __init__(self, concurrent, reps, url, remote_cmd):
+    def __init__(self, concurrent, reps, url, remote_cmd, socket_type):
         self.concurrent = concurrent
         self.reps = reps
         self.url = url
         self.remote_cmd = remote_cmd
+        self.socket_type = socket_type
 
-    def worker(self, worker_idx):
+    def make_stream(self):
+        import websocket
 
-        host, port = self.url.split(':')
-        address = (host, int(port))
-        try:
+        if self.socket_type == 'socket':
+            host, port = self.url.split(':')
+            address = (host, int(port))
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect(address)
+            stream = Stream(s)
+        else:
+            s = websocket.create_connection(self.url)
+            stream = WSClientStream(s)
+
+        return stream
+
+    def worker(self, worker_idx):
+        try:
+            stream = self.make_stream()
         except:
             # 直接把所有的错误请求都加上
             self.failed_transactions += self.reps
             click.secho('worker[%s] socket connect fail' % worker_idx, fg='red')
             return
 
-        stream = Stream(s)
         box = Box()
         if hasattr(box, 'set_json'):
             box.set_json(dict(
@@ -62,8 +91,6 @@ class Siege(object):
                 break
             else:
                 self.successful_transactions += 1
-
-        s.close()
 
     def run(self):
         jobs = []
@@ -119,8 +146,9 @@ class Siege(object):
 @click.command()
 @click.option('--concurrent', '-c', type=int, default=10, help='CONCURRENT users, default is 10')
 @click.option('--reps', '-r', type=int, default=10, help='REPS, number of times to run the test.')
-@click.option('--url', '-u', default='127.0.0.1:7777', help='URL, like 127.0.0.1:7777')
+@click.option('--url', '-u', default='127.0.0.1:7777', help='URL, like 127.0.0.1:7777, ws://127.0.0.1:8000/echo')
 @click.option('--remote_cmd', '-m', default=1, type=int, help='REMOTE_CMD, 1')
+@click.option('--socket_type', '-t', default='socket', help='socket_type, socket/websocket')
 def main(concurrent, reps, url, remote_cmd):
     siege = Siege(concurrent, reps, url, remote_cmd)
     siege.run()
