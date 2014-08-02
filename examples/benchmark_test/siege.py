@@ -119,7 +119,7 @@ class Siege(object):
 @click.command()
 @click.option('--concurrent', '-c', type=int, default=10, help='CONCURRENT users, default is 10')
 @click.option('--reps', '-r', type=int, default=10, help='REPS, number of times to run the test.')
-@click.option('--url', '-u', default='127.0.0.1:7777', help='URL, 127.0.0.1:7777')
+@click.option('--url', '-u', default='127.0.0.1:7777', help='URL, like 127.0.0.1:7777')
 @click.option('--remote_cmd', '-m', default=1, type=int, help='REMOTE_CMD, 1')
 def main(concurrent, reps, url, remote_cmd):
     siege = Siege(concurrent, reps, url, remote_cmd)
