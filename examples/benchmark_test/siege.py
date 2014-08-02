@@ -124,7 +124,7 @@ class Siege(object):
 def main(concurrent, reps, url, remote_cmd):
     siege = Siege(concurrent, reps, url, remote_cmd)
     siege.run()
-    click.secho('done')
+    click.secho('done', fg='green')
     click.secho('Transactions: %d hits' % siege.transactions)
     click.secho('Availability: %.02f %%' % (siege.availability * 100))
     click.secho('Elapsed time: %.02f secs' % siege.elapsed_time)
