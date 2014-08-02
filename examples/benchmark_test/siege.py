@@ -125,13 +125,14 @@ def main(concurrent, reps, url, remote_cmd):
     siege = Siege(concurrent, reps, url, remote_cmd)
     siege.run()
     click.secho('done', fg='green')
-    click.secho('Transactions: %d hits' % siege.transactions)
-    click.secho('Availability: %.02f %%' % (siege.availability * 100))
-    click.secho('Elapsed time: %.02f secs' % siege.elapsed_time)
-    click.secho('Response time: %.02f secs' % siege.response_time)
-    click.secho('Transaction rate: %.02f trans/sec' % siege.transaction_rate)
-    click.secho('Successful transactions: %d hits' % siege.successful_transactions)
-    click.secho('Failed transactions: %d hits' % siege.failed_transactions)
+    click.secho('Transactions:              %-10d hits' % siege.transactions)
+    click.secho('Availability:              %-10.02f %%' % (siege.availability * 100))
+    click.secho('Elapsed time:              %-10.02f secs' % siege.elapsed_time)
+    click.secho('Response time:             %-10.02f secs' % siege.response_time)
+    click.secho('Transaction rate:          %-10.02f trans/sec' % siege.transaction_rate)
+    click.secho('Successful transactions:   %-10d hits' % siege.successful_transactions)
+    click.secho('Failed transactions:       %-10d hits' % siege.failed_transactions)
+
 
 if __name__ == '__main__':
     main()
