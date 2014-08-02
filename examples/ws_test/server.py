@@ -3,13 +3,8 @@
 from gevent import monkey; monkey.patch_all()
 
 from haven.contrib.websocket_gevent_impl import WSGHaven
-from kola_box import KolaBox
+from reimp import Box, logger
 from flask import Flask
-from haven import logger
-import logging
-
-logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.DEBUG)
 
 flask_app = Flask(__name__)
 
@@ -18,10 +13,10 @@ flask_app = Flask(__name__)
 def http():
     return u'http ok'
 
-app = WSGHaven(KolaBox, '/echo', flask_app)
+app = WSGHaven(Box, '/echo', flask_app)
 
 
-@app.route(1)
+@app.route(101)
 def index(request):
     request.write(dict(
         ret=1,
