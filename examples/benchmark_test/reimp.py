@@ -2,8 +2,8 @@
 
 import logging
 
-# from haven import GHaven as Haven, GBlueprint as Blueprint, GTimer as Timer
-from haven import THaven as Haven, TBlueprint as Blueprint, GTimer as Timer
+from haven import GHaven as Haven, GBlueprint as Blueprint, GTimer as Timer
+# from haven import THaven as Haven, TBlueprint as Blueprint, GTimer as Timer
 
 #from netkit.box import Box as Box
 from kola_box import KolaBox as Box
