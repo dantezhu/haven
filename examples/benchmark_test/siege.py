@@ -148,7 +148,7 @@ class Siege(object):
 @click.option('--reps', '-r', type=int, default=10, help='REPS, number of times to run the test.')
 @click.option('--url', '-u', default='127.0.0.1:7777', help='URL, like 127.0.0.1:7777, ws://127.0.0.1:8000/echo')
 @click.option('--remote_cmd', '-m', default=1, type=int, help='REMOTE_CMD, 1')
-@click.option('--socket_type', '-t', default='socket', help='socket_type, socket/websocket')
+@click.option('--socket_type', '-t', default='socket', help='SOCKET_TYPE, socket/websocket')
 def main(concurrent, reps, url, remote_cmd, socket_type):
     siege = Siege(concurrent, reps, url, remote_cmd, socket_type)
     siege.run()
