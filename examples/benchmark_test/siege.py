@@ -149,8 +149,8 @@ class Siege(object):
 @click.option('--url', '-u', default='127.0.0.1:7777', help='URL, like 127.0.0.1:7777, ws://127.0.0.1:8000/echo')
 @click.option('--remote_cmd', '-m', default=1, type=int, help='REMOTE_CMD, 1')
 @click.option('--socket_type', '-t', default='socket', help='socket_type, socket/websocket')
-def main(concurrent, reps, url, remote_cmd):
-    siege = Siege(concurrent, reps, url, remote_cmd)
+def main(concurrent, reps, url, remote_cmd, socket_type):
+    siege = Siege(concurrent, reps, url, remote_cmd, socket_type)
     siege.run()
     click.secho('done', fg='green')
     click.secho('Transactions:              %-10d hits' % siege.transactions)
