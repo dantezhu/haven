@@ -113,7 +113,7 @@ class Siege(object):
         每秒的请求数
         """
         if self.elapsed_time != 0:
-            return self.transactions / self.elapsed_time
+            return 1.0 * self.transactions / self.elapsed_time
         else:
             return 0
 
@@ -123,7 +123,7 @@ class Siege(object):
         平均响应时间
         """
         if self.transactions != 0:
-            return self.elapsed_time / self.transactions
+            return 1.0 * self.elapsed_time / self.transactions
         else:
             return 0
 
@@ -138,7 +138,7 @@ class Siege(object):
     @property
     def availability(self):
         if self.plan_transactions != 0:
-            return self.successful_transactions / self.plan_transactions
+            return 1.0 * self.successful_transactions / self.plan_transactions
         else:
             return 0
 
