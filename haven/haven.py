@@ -23,7 +23,11 @@ class Haven(AppCallBacksMixin):
     def register_blueprint(self, blueprint):
         blueprint.register2app(self)
 
-    def run(self, host, port, debug=None, use_reloader=None, workers=None, handle_signals=None):
+    def run(self, host=None, port=None, debug=None, use_reloader=None, workers=None, handle_signals=None):
+        if host is None:
+            host = '127.0.0.1'
+        if port is None:
+            port = 7777
         if debug is not None:
             self.debug = debug
 

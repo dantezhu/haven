@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="haven",
-    version='1.1.22',
+    version='1.1.25',
     zip_safe=False,
     platforms='any',
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
