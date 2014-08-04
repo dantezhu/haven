@@ -4,6 +4,7 @@
 import time
 
 from websocket import create_connection
+from websocket import ABNF
 from reimp import Box
 
 ws = create_connection("ws://127.0.0.1:8000/echo")
@@ -19,7 +20,7 @@ else:
     box.body = '我爱你'
 
 t1 = time.time()
-ws.send(box.pack())
+ws.send(box.pack(), ABNF.OPCODE_TEXT)
 result = ws.recv()
 print 'time past: ', time.time() - t1
 print "Received '%r'" % result
