@@ -15,8 +15,7 @@ from haven import GHaven
 class WSStream(Stream):
     def read_from_fd(self):
         try:
-            # 如果二进制传输，获取的将会是bytearray，会导致box.body是bytearray格式，从而导致protobuf parse报错
-            chunk = str(self.sock.receive())
+            chunk = self.sock.receive()
         except:
             logger.error('exc occur.', exc_info=True)
             # 其他都直接关闭
@@ -26,7 +25,9 @@ class WSStream(Stream):
         if not chunk:
             self.close()
             return None
-        return chunk
+
+        # 如果二进制传输，获取的将会是bytearray，会导致box.body是bytearray格式，从而导致protobuf parse报错
+        return str(chunk)
 
     def write_to_fd(self, data):
         try:
