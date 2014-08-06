@@ -18,4 +18,7 @@ ws.send(box.pack(), ABNF.OPCODE_TEXT)
 result = ws.recv()
 print 'time past: ', time.time() - t1
 print "Received '%r'" % result
+recv_box = Box()
+recv_box.unpack(result)
+print recv_box
 ws.close()
