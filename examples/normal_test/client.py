@@ -14,14 +14,8 @@ s.connect(address)
 stream = Stream(s)
 
 box = Box()
-if hasattr(box, 'set_json'):
-    box.set_json(dict(
-        endpoint=101,
-        body=u'我爱你'
-    ))
-else:
-    box.cmd = 101
-    box.body = '我爱你'
+box.cmd = 101
+box.body = '我爱你'
 
 stream.write(box.pack())
 

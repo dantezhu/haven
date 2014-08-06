@@ -2,8 +2,7 @@
 
 import logging
 
-#from netkit.box import Box as Box
-from kola_box import KolaBox as Box
+from netkit.box import Box
 
 from haven import logger
 

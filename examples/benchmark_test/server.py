@@ -4,6 +4,7 @@ from reimp import Haven, logger, Box
 
 app = Haven(Box)
 
+
 @app.route(101)
 def index(request):
     request.write(dict(ret=0))
