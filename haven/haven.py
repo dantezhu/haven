@@ -7,6 +7,7 @@ import signal
 from .callbacks_mixin import AppCallBacksMixin
 from . import autoreload
 from .log import logger
+from . import constants
 
 
 class Haven(AppCallBacksMixin):
@@ -25,9 +26,9 @@ class Haven(AppCallBacksMixin):
 
     def run(self, host=None, port=None, debug=None, use_reloader=None, workers=None, handle_signals=None):
         if host is None:
-            host = '127.0.0.1'
+            host = constants.SERVER_HOST
         if port is None:
-            port = 7777
+            port = constants.SERVER_PORT
         if debug is not None:
             self.debug = debug
 
