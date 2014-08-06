@@ -20,8 +20,7 @@ app = WSGHaven(Box, '/echo', flask_app)
 def index(request):
     request.write(dict(
         ret=1,
-        body='ok haha',
-        address=request.address,
+        body=repr(request.address),
     ))
 
 

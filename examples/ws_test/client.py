@@ -14,7 +14,8 @@ box.cmd = 101
 box.body = '我爱你'
 
 t1 = time.time()
-ws.send(box.pack(), ABNF.OPCODE_TEXT)
+# 二进制协议
+ws.send(box.pack(), ABNF.OPCODE_BINARY)
 result = ws.recv()
 print 'time past: ', time.time() - t1
 print "Received '%r'" % result
