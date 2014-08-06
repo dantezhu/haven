@@ -20,8 +20,9 @@ class WSClientStream(object):
     def __init__(self, sock):
         self.sock = sock
 
-    def write(self, *args, **kwargs):
-        return self.sock.send(*args, **kwargs)
+    def write(self, data):
+        from websocket import ABNF
+        return self.sock.send(data, ABNF.OPCODE_BINARY)
 
     def read_with_checker(self, *args, **kwargs):
         return self.sock.recv()
