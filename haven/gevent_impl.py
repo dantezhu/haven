@@ -36,7 +36,9 @@ class GHaven(Haven):
         self.stream_class = stream_class or Stream
 
     def handle_stream(self, sock, address):
-        self.connection_class(self, self.box_class, self.request_class, self.stream_class(sock), address).handle()
+        self.connection_class(
+            self, self.box_class, self.request_class, self.stream_class(sock, use_gevent=True), address
+        ).handle()
 
     def repeat_timer(self, interval):
         def inner_repeat_timer(func):
