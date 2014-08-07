@@ -63,7 +63,7 @@ class Connection(object):
             self._read_message()
 
     def _read_message(self):
-        data = self.stream.read_with_checker(self.box_class().check)
+        data = self.stream.read_with_checker(self.box_class.instance().check)
         if data:
             self._on_read_complete(data)
 
