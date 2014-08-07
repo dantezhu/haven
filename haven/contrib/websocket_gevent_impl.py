@@ -84,7 +84,8 @@ class WSGHaven(GHaven):
         return self.wsgi_app(environ, start_response)
 
     def _prepare_server(self, host, port):
-        self.server = gevent.wsgi.WSGIServer((host, port), self.wsgi_app, handler_class=WebSocketHandler)
+        self.server = gevent.wsgi.WSGIServer((host, port), self.wsgi_app,
+                                             backlog=self.backlog, handler_class=WebSocketHandler)
         self.server.start()
 
     def _serve_forever(self):

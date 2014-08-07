@@ -10,10 +10,12 @@ from .request import Request
 from .haven import Haven
 from .blueprint import Blueprint
 from .utils import safe_call
+from . import constants
 
 
 class THaven(Haven):
 
+    backlog = constants.SERVER_BACKLOG
     server = None
 
     def __init__(self, box_class, server_class=None, connection_class=None, request_class=None, stream_class=None):
@@ -40,6 +42,7 @@ class THaven(Haven):
                 ).handle()
 
         self.server = self.server_class((host, port), RequestHandler, bind_and_activate=False)
+        self.server.request_queue_size = self.backlog
         # 主线程退出时，所有子线程结束
         self.server.daemon_threads = True
         # 必须在server_bind之前

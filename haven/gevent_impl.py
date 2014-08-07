@@ -11,6 +11,7 @@ from .request import Request
 from .haven import Haven
 from .blueprint import Blueprint
 from .utils import safe_call
+from . import constants
 
 
 class GConnection(Connection):
@@ -25,6 +26,7 @@ class GConnection(Connection):
 
 class GHaven(Haven):
 
+    backlog = constants.SERVER_BACKLOG
     server = None
 
     def __init__(self, box_class, server_class=None, connection_class=None, request_class=None, stream_class=None):
@@ -49,7 +51,7 @@ class GHaven(Haven):
         return inner_repeat_timer
 
     def _prepare_server(self, host, port):
-        self.server = self.server_class((host, port), self.handle_stream)
+        self.server = self.server_class((host, port), handle=self.handle_stream, backlog=self.backlog)
         self.server.start()
 
     def _serve_forever(self):
