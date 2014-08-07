@@ -88,7 +88,7 @@ class Haven(AppCallBacksMixin):
             p = start_worker_process()
             p_list.append(p)
 
-        while True:
+        while 1:
             for idx, p in enumerate(p_list):
                 if not p.is_alive():
                     old_pid = p.pid
