@@ -57,7 +57,7 @@ class Siege(object):
             address = (host, int(port))
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect(address)
-            stream = Stream(s)
+            stream = Stream(s, use_gevent=True)
         else:
             s = websocket.create_connection(self.url)
             stream = WSClientStream(s)
