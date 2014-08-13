@@ -6,7 +6,7 @@ from reimp import Box
 
 import time
 
-client = TcpClient(Box, '127.0.0.1', 7777)
+client = TcpClient(Box, '127.0.0.1', 7777, timeout=5)
 client.connect()
 
 box = Box()
