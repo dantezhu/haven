@@ -22,7 +22,6 @@ while True:
     box = client.read()
     print 'time past: ', time.time() - t1
     print box
-
-    if client.closed():
+    if box is None:
         print 'server closed'
         break
