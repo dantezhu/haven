@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from multiprocessing import Process
-from threading import Lock
 import time
 import signal
 from .callbacks_mixin import AppCallBacksMixin
@@ -13,12 +12,10 @@ from . import constants
 class Haven(AppCallBacksMixin):
     debug = False
     got_first_request = False
-    got_first_request_lock = None
     blueprints = None
 
     def __init__(self):
         super(Haven, self).__init__()
-        self.got_first_request_lock = Lock()
         self.blueprints = list()
 
     def register_blueprint(self, blueprint):
@@ -55,6 +52,12 @@ class Haven(AppCallBacksMixin):
             autoreload.main(run_wrapper)
         else:
             run_wrapper()
+
+    def acquire_got_first_request(self):
+        pass
+
+    def release_got_first_request(self):
+        pass
 
     def repeat_timer(self, interval):
         raise NotImplementedError

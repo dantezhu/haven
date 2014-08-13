@@ -106,11 +106,11 @@ class Connection(object):
             real_got_first_request = False
 
             # 加锁
-            self.app.got_first_request_lock.acquire()
+            self.app.acquire_got_first_request()
             if not self.app.got_first_request:
                 self.app.got_first_request = True
                 real_got_first_request = True
-            self.app.got_first_request_lock.release()
+            self.app.release_got_first_request()
 
             if real_got_first_request:
                 self.app.events.before_first_request(request)

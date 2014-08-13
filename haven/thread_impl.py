@@ -3,6 +3,7 @@
 from SocketServer import ThreadingTCPServer, StreamRequestHandler
 import threading
 import functools
+from threading import Lock
 from netkit.stream import Stream
 
 from .connection import Connection
@@ -17,6 +18,7 @@ class THaven(Haven):
 
     backlog = constants.SERVER_BACKLOG
     server = None
+    got_first_request_lock = None
 
     def __init__(self, box_class, server_class=None, connection_class=None, request_class=None, stream_class=None):
         super(THaven, self).__init__()
@@ -25,6 +27,7 @@ class THaven(Haven):
         self.connection_class = connection_class or Connection
         self.request_class = request_class or Request
         self.stream_class = stream_class or Stream
+        self.got_first_request_lock = Lock()
 
     def repeat_timer(self, interval):
         def inner_repeat_timer(func):
@@ -33,6 +36,12 @@ class THaven(Haven):
             return func
 
         return inner_repeat_timer
+
+    def acquire_got_first_request(self):
+        self.got_first_request_lock.acquire()
+
+    def release_got_first_request(self):
+        self.got_first_request_lock.release()
 
     def _prepare_server(self, host, port):
         class RequestHandler(StreamRequestHandler):
