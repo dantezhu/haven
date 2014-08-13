@@ -1,39 +1,28 @@
 # -*- coding: utf-8 -*-
 
 
-from netkit.stream import Stream
+from netkit.contrib.tcp_client import TcpClient
 from reimp import Box
 
 import time
-import socket
 
-address = ('127.0.0.1', 7777)
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(address)
-
-stream = Stream(s)
+client = TcpClient(Box, '127.0.0.1', 7777)
+client.connect()
 
 box = Box()
 box.cmd = 101
 box.body = '我爱你'
 
-stream.write(box.pack())
+client.write(box)
 
 t1 = time.time()
 
 while True:
     # 阻塞
-    buf = stream.read_with_checker(Box().check)
-
+    box = client.read()
     print 'time past: ', time.time() - t1
+    print box
 
-    if buf:
-        box2 = Box()
-        box2.unpack(buf)
-        print box2
-
-    if stream.closed():
+    if client.closed():
         print 'server closed'
         break
-
-s.close()
