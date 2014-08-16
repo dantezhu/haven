@@ -50,8 +50,6 @@ class Siege(object):
         self.socket_type = socket_type
 
     def make_stream(self):
-        import websocket
-
         if self.socket_type == 'socket':
             host, port = self.url.split(':')
             address = (host, int(port))
@@ -59,6 +57,7 @@ class Siege(object):
             s.connect(address)
             stream = Stream(s, use_gevent=True, lock_mode=0)
         else:
+            import websocket
             s = websocket.create_connection(self.url)
             stream = WSClientStream(s)
 
