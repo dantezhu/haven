@@ -51,8 +51,8 @@ def before_app_response(conn, rsp):
 
 
 @bp.after_app_response
-def after_app_response(conn, rsp):
-    logger.error('bp.after_app_response rsp: %r', rsp)
+def after_app_response(conn, rsp, result):
+    logger.error('bp.after_app_response rsp: %r, %s', rsp, result)
 
 
 @bp.repeat_app_timer(5)

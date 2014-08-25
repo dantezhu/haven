@@ -39,8 +39,8 @@ def before_response(conn, rsp):
 
 
 @app.after_response
-def after_response(conn, rsp):
-    logger.error('after_response: %r', rsp)
+def after_response(conn, rsp, result):
+    logger.error('after_response: %r, %s', rsp, result)
 
 
 @app.repeat_timer(5)

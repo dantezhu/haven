@@ -36,8 +36,8 @@ class Connection(object):
         ret = self.stream.write(data)
 
         for bp in self.app.blueprints:
-            bp.events.after_app_response(self, data)
-        self.app.events.after_response(self, data)
+            bp.events.after_app_response(self, data, ret)
+        self.app.events.after_response(self, data, ret)
 
         return ret
 

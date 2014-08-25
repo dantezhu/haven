@@ -85,7 +85,7 @@ class AppCallBacksMixin(RoutesMixin):
     def after_response(self, f):
         """
         在 stream.write 之后，传入encode之后的data
-        f(conn, response)
+        f(conn, response, result)
         """
         self.events.after_response += safe_func(f)
         return f
@@ -160,7 +160,7 @@ class BlueprintCallBacksMixin(RoutesMixin):
     def after_app_response(self, f):
         """
         在 stream.write 之后，传入encode之后的data
-        f(conn, response)
+        f(conn, response, result)
         """
         self.events.after_app_response += safe_func(f)
         return f
