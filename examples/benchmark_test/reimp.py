@@ -2,9 +2,9 @@
 
 import logging
 
-from haven import GHaven as Haven, GBlueprint as Blueprint
-# from haven import THaven as Haven, TBlueprint as Blueprint
-# from melon import Melon, Blueprint
+from haven import GHaven as App, GBlueprint as Blueprint
+# from haven import THaven as App, TBlueprint as Blueprint
+# from melon import Melon as App, Blueprint
 
 from netkit.box import Box
 # from kola_box import KolaBox as Box

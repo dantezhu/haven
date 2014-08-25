@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from reimp import Haven, logger, Box
+from reimp import App, logger, Box
 
-app = Haven(Box)
+app = App(Box)
 
 
 @app.route(1)
