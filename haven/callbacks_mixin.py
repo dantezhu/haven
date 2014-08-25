@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from .utils import safe_func
+import functools
 from events import Events
+
+from .utils import safe_func
 
 
 class RoutesMixin(object):
@@ -10,11 +12,9 @@ class RoutesMixin(object):
     """
 
     rule_map = None
-    events = None
 
     def __init__(self):
         self.rule_map = dict()
-        self.events = Events()
 
     def add_route_rule(self, cmd=None, view_func=None, **options):
         assert view_func is not None, 'expected view func if cmd is not provided.'
@@ -40,135 +40,138 @@ class RoutesMixin(object):
         return self.rule_map.get(cmd)
 
 
-class AppCallBacksMixin(RoutesMixin):
+def register_event(func):
+    @functools.wraps(func)
+    def func_wrapper(mixin, handler):
+        event = getattr(mixin.events, func.__name__)
+        event += safe_func(handler)
 
+        return handler
+    return func_wrapper
+
+
+class AppEventsMixin(object):
+    events = None
+
+    def __init__(self):
+        self.events = Events()
+
+    @register_event
     def create_conn(self, f):
         """
         连接建立成功后
         f(conn)
         """
-        self.events.create_conn += safe_func(f)
-        return f
 
+    @register_event
     def before_first_request(self, f):
         """
         第一个请求，请求解析为json成功后
         f(request)
         """
-        self.events.before_first_request += safe_func(f)
-        return f
 
+    @register_event
     def before_request(self, f):
         """
         请求解析为json成功后
         f(request)
         """
-        self.events.before_request += safe_func(f)
-        return f
 
+    @register_event
     def after_request(self, f):
         """
         执行完route对应的view_func后
         f(request, exc)
         """
-        self.events.after_request += safe_func(f)
-        return f
 
+    @register_event
     def before_response(self, f):
         """
         在 stream.write 之前，传入encode之后的data
         f(conn, response)
         """
-        self.events.before_response += safe_func(f)
-        return f
 
+    @register_event
     def after_response(self, f):
         """
         在 stream.write 之后，传入encode之后的data
         f(conn, response, result)
         """
-        self.events.after_response += safe_func(f)
-        return f
 
+    @register_event
     def close_conn(self, f):
         """
         连接close之后
         f(conn)
         """
-        self.events.close_conn += safe_func(f)
-        return f
 
 
-class BlueprintCallBacksMixin(RoutesMixin):
+class BlueprintEventsMixin(object):
 
+    events = None
+
+    def __init__(self):
+        self.events = Events()
+
+    @register_event
     def before_request(self, f):
         """
         请求解析为json成功后
         f(request)
         """
-        self.events.before_request += safe_func(f)
-        return f
 
+    @register_event
     def after_request(self, f):
         """
         执行完route对应的view_func后
         f(request)
         """
-        self.events.after_request += safe_func(f)
-        return f
 
+    @register_event
     def create_app_conn(self, f):
         """
         连接建立成功后
         f(conn)
         """
-        self.events.create_app_conn += safe_func(f)
-        return f
 
+    @register_event
     def before_app_first_request(self, f):
         """
         第一次请求，请求解析为json成功后
         f(request)
         """
-        self.events.before_app_first_request += safe_func(f)
-        return f
 
+    @register_event
     def before_app_request(self, f):
         """
         请求解析为json成功后
         f(request)
         """
-        self.events.before_app_request += safe_func(f)
-        return f
 
+    @register_event
     def after_app_request(self, f):
         """
         执行完route对应的view_func后
         f(request)
         """
-        self.events.after_app_request += safe_func(f)
-        return f
 
+    @register_event
     def before_app_response(self, f):
         """
         在 stream.write 之前，传入encode之后的data
         f(conn, response)
         """
-        self.events.before_app_response += safe_func(f)
-        return f
 
+    @register_event
     def after_app_response(self, f):
         """
         在 stream.write 之后，传入encode之后的data
         f(conn, response, result)
         """
-        self.events.after_app_response += safe_func(f)
-        return f
 
+    @register_event
     def close_app_conn(self, f):
         """
         连接close之后
         f(conn)
         """
-        self.events.close_app_conn += safe_func(f)
-        return f

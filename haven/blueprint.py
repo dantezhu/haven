@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from .callbacks_mixin import BlueprintCallBacksMixin
+from .callbacks_mixin import RoutesMixin, BlueprintEventsMixin
 
 
-class Blueprint(BlueprintCallBacksMixin):
+class Blueprint(RoutesMixin, BlueprintEventsMixin):
 
     name = None
     app = None
 
     def __init__(self, name=None):
-        super(Blueprint, self).__init__()
+        RoutesMixin.__init__(self)
+        BlueprintEventsMixin.__init__(self)
         self.name = name
 
     def register2app(self, app):

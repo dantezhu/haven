@@ -3,19 +3,21 @@
 from multiprocessing import Process
 import time
 import signal
-from .callbacks_mixin import AppCallBacksMixin
+
+from .callbacks_mixin import RoutesMixin, AppEventsMixin
 from . import autoreload
 from .log import logger
 from . import constants
 
 
-class Haven(AppCallBacksMixin):
+class Haven(RoutesMixin, AppEventsMixin):
     debug = False
     got_first_request = False
     blueprints = None
 
     def __init__(self):
-        super(Haven, self).__init__()
+        RoutesMixin.__init__(self)
+        AppEventsMixin.__init__(self)
         self.blueprints = list()
 
     def register_blueprint(self, blueprint):
