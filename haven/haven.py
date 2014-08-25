@@ -4,7 +4,7 @@ from multiprocessing import Process
 import time
 import signal
 
-from .callbacks_mixin import RoutesMixin, AppEventsMixin
+from .mixins import RoutesMixin, AppEventsMixin
 from . import autoreload
 from .log import logger
 from . import constants
