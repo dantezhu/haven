@@ -40,10 +40,10 @@ class RoutesMixin(object):
         return self.rule_map.get(cmd)
 
 
-def _register_handler(func):
+def _reg_event_handler(func):
     @functools.wraps(func)
-    def func_wrapper(mixin, handler):
-        event = getattr(mixin.events, func.__name__)
+    def func_wrapper(obj, handler):
+        event = getattr(obj.events, func.__name__)
         event += safe_func(handler)
 
         return handler
@@ -56,49 +56,49 @@ class AppEventsMixin(object):
     def __init__(self):
         self.events = Events()
 
-    @_register_handler
+    @_reg_event_handler
     def create_conn(self, f):
         """
         连接建立成功后
         f(conn)
         """
 
-    @_register_handler
+    @_reg_event_handler
     def before_first_request(self, f):
         """
         第一个请求，请求解析为json成功后
         f(request)
         """
 
-    @_register_handler
+    @_reg_event_handler
     def before_request(self, f):
         """
         请求解析为json成功后
         f(request)
         """
 
-    @_register_handler
+    @_reg_event_handler
     def after_request(self, f):
         """
         执行完route对应的view_func后
         f(request, exc)
         """
 
-    @_register_handler
+    @_reg_event_handler
     def before_response(self, f):
         """
         在 stream.write 之前，传入encode之后的data
         f(conn, response)
         """
 
-    @_register_handler
+    @_reg_event_handler
     def after_response(self, f):
         """
         在 stream.write 之后，传入encode之后的data
         f(conn, response, result)
         """
 
-    @_register_handler
+    @_reg_event_handler
     def close_conn(self, f):
         """
         连接close之后
@@ -113,63 +113,63 @@ class BlueprintEventsMixin(object):
     def __init__(self):
         self.events = Events()
 
-    @_register_handler
+    @_reg_event_handler
     def before_request(self, f):
         """
         请求解析为json成功后
         f(request)
         """
 
-    @_register_handler
+    @_reg_event_handler
     def after_request(self, f):
         """
         执行完route对应的view_func后
         f(request)
         """
 
-    @_register_handler
+    @_reg_event_handler
     def create_app_conn(self, f):
         """
         连接建立成功后
         f(conn)
         """
 
-    @_register_handler
+    @_reg_event_handler
     def before_app_first_request(self, f):
         """
         第一次请求，请求解析为json成功后
         f(request)
         """
 
-    @_register_handler
+    @_reg_event_handler
     def before_app_request(self, f):
         """
         请求解析为json成功后
         f(request)
         """
 
-    @_register_handler
+    @_reg_event_handler
     def after_app_request(self, f):
         """
         执行完route对应的view_func后
         f(request)
         """
 
-    @_register_handler
+    @_reg_event_handler
     def before_app_response(self, f):
         """
         在 stream.write 之前，传入encode之后的data
         f(conn, response)
         """
 
-    @_register_handler
+    @_reg_event_handler
     def after_app_response(self, f):
         """
         在 stream.write 之后，传入encode之后的data
         f(conn, response, result)
         """
 
-    @_register_handler
+    @_reg_event_handler
     def close_app_conn(self, f):
         """
         连接close之后
