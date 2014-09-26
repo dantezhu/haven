@@ -50,15 +50,14 @@ class THaven(Haven):
                     self, self.box_class, self.request_class, self.stream_class(sub_self.connection), sub_self.client_address
                 ).handle()
 
-        self.server = self.server_class((host, port), RequestHandler, bind_and_activate=False)
-        self.server.request_queue_size = self.backlog
-        # 主线程退出时，所有子线程结束
-        self.server.daemon_threads = True
-        # 必须在server_bind之前
-        self.server.allow_reuse_address = True
+        class MyServer(self.server_class):
+            request_queue_size = self.backlog
+            # 主线程退出时，所有子线程结束
+            daemon_threads = True
+            # 必须在server_bind之前
+            allow_reuse_address = True
 
-        self.server.server_bind()
-        self.server.server_activate()
+        self.server = MyServer((host, port), RequestHandler)
 
     def _serve_forever(self):
         self.server.serve_forever()
