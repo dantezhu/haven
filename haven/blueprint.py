@@ -13,7 +13,7 @@ class Blueprint(RoutesMixin, BlueprintEventsMixin):
         BlueprintEventsMixin.__init__(self)
         self.name = name
 
-    def register2app(self, app):
+    def register_to_app(self, app):
         """
         注册到app上
         """

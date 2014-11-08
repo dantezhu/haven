@@ -21,7 +21,7 @@ class Haven(RoutesMixin, AppEventsMixin):
         self.blueprints = list()
 
     def register_blueprint(self, blueprint):
-        blueprint.register2app(self)
+        blueprint.register_to_app(self)
 
     def run(self, host=None, port=None, debug=None, use_reloader=None, workers=None, handle_signals=None):
         if host is None:
