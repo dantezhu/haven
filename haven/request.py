@@ -10,7 +10,6 @@ class Request(object):
     """
 
     conn = None
-    box_class = None
     raw_data = None
     box = None
     is_valid = False
@@ -18,15 +17,14 @@ class Request(object):
     blueprint_name = None
     blueprint_cmd = None
 
-    def __init__(self, conn, box_class, raw_data):
+    def __init__(self, conn, raw_data):
         self.conn = conn
-        self.box_class = box_class
         self.raw_data = raw_data
         self.is_valid = self._parse_raw_data()
 
     def _parse_raw_data(self):
         try:
-            self.box = self.box_class()
+            self.box = self.conn.app.box_class()
         except Exception, e:
             logger.error('parse raw_data fail. e: %s, request: %s', e, self)
             return False

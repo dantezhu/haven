@@ -5,10 +5,8 @@ from .log import logger
 
 
 class Connection(object):
-    def __init__(self, app, box_class, request_class, stream, address):
+    def __init__(self, app, stream, address):
         self.app = app
-        self.box_class = box_class
-        self.request_class = request_class
         self.stream = stream
         self.address = address
 
@@ -23,11 +21,11 @@ class Connection(object):
         if self.stream.closed():
             return
 
-        if isinstance(data, self.box_class):
+        if isinstance(data, self.app.box_class):
             # 打包
             data = data.pack()
         elif isinstance(data, dict):
-            data = self.box_class(data).pack()
+            data = self.app.box_class(data).pack()
 
         self.app.events.before_response(self, data)
         for bp in self.app.blueprints:
@@ -63,7 +61,7 @@ class Connection(object):
             self._read_message()
 
     def _read_message(self):
-        data = self.stream.read_with_checker(self.box_class.instance().check)
+        data = self.stream.read_with_checker(self.app.stream_checker)
         if data:
             self._on_read_complete(data)
 
@@ -82,7 +80,7 @@ class Connection(object):
         """
         数据获取结束
         """
-        request = self.request_class(self, self.box_class, data)
+        request = self.app.request_class(self, data)
         self._handle_request(request)
 
     def _handle_request(self, request):

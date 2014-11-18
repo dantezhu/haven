@@ -28,6 +28,7 @@ class THaven(Haven):
         self.request_class = request_class or Request
         self.stream_class = stream_class or Stream
         self.got_first_request_lock = Lock()
+        self.stream_checker = self.box_class().check
 
     def repeat_timer(self, interval):
         def inner_repeat_timer(func):
@@ -47,7 +48,7 @@ class THaven(Haven):
         class RequestHandler(StreamRequestHandler):
             def handle(sub_self):
                 self.connection_class(
-                    self, self.box_class, self.request_class, self.stream_class(sub_self.connection), sub_self.client_address
+                    self, self.stream_class(sub_self.connection), sub_self.client_address
                 ).handle()
 
         class MyServer(self.server_class):
