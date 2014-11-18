@@ -73,12 +73,7 @@ class Siege(object):
             return
 
         box = Box()
-        if getattr(box, 'header_len', None):
-            box.cmd = self.msg_cmd
-        else:
-            box.set_json(dict(
-                endpoint=self.msg_cmd
-            ))
+        box.cmd = self.msg_cmd
 
         send_buf = box.pack()
         for it in xrange(0, self.reps):
