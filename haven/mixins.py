@@ -121,13 +121,6 @@ class BlueprintEventsMixin(object):
         self.events = Events()
 
     @_reg_event_handler
-    def create_app_worker(self, f):
-        """
-        创建worker
-        f()
-        """
-
-    @_reg_event_handler
     def before_request(self, f):
         """
         请求解析为json成功后
@@ -139,6 +132,13 @@ class BlueprintEventsMixin(object):
         """
         执行完route对应的view_func后
         f(request)
+        """
+
+    @_reg_event_handler
+    def create_app_worker(self, f):
+        """
+        创建worker
+        f()
         """
 
     @_reg_event_handler
