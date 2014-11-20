@@ -71,6 +71,10 @@ class Haven(RoutesMixin, AppEventsMixin):
         if not main_process:
             self._handle_child_proc_signals()
 
+        self.events.create_worker()
+        for bp in self.blueprints:
+            bp.events.create_app_worker()
+
         try:
             self._serve_forever()
         except KeyboardInterrupt:

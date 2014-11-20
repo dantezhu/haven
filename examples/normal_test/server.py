@@ -7,6 +7,9 @@ import user
 
 app = Haven(Box)
 
+@app.create_worker
+def create_worker():
+    logger.error('create_worker')
 
 @app.create_conn
 def create_conn(conn):

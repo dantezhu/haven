@@ -57,6 +57,13 @@ class AppEventsMixin(object):
         self.events = Events()
 
     @_reg_event_handler
+    def create_worker(self, f):
+        """
+        创建worker
+        f()
+        """
+
+    @_reg_event_handler
     def create_conn(self, f):
         """
         连接建立成功后
@@ -112,6 +119,13 @@ class BlueprintEventsMixin(object):
 
     def __init__(self):
         self.events = Events()
+
+    @_reg_event_handler
+    def create_app_worker(self, f):
+        """
+        创建worker
+        f()
+        """
 
     @_reg_event_handler
     def before_request(self, f):

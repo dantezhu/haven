@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__version__ = '1.1.58'
+__version__ = '1.1.59'
 
 from .log import logger
 from .utils import safe_call, safe_func
