@@ -19,7 +19,7 @@ class Connection(object):
         发送数据    True: 成功   else: 失败
         """
         if self.stream.closed():
-            return
+            return False
 
         if isinstance(data, self.app.box_class):
             # 打包

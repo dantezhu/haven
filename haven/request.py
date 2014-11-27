@@ -75,4 +75,4 @@ class Request(object):
         self.conn.close(exc_info)
 
     def __repr__(self):
-        return 'client_address: %r, cmd: %r, raw_data: %r' % (self.address, self.cmd, repr(self.raw_data))
+        return 'client_address: %r, cmd: %r, raw_data: %r' % (self.address, self.cmd, self.raw_data)
