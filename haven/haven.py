@@ -38,8 +38,6 @@ class Haven(RoutesMixin, AppEventsMixin):
             logger.info('Running server on %s:%s, debug: %s, use_reloader: %s',
                         host, port, self.debug, use_reloader)
 
-            self._before_run()
-
             self._prepare_server(host, port)
             if workers is not None:
                 if handle_signals:
@@ -64,16 +62,20 @@ class Haven(RoutesMixin, AppEventsMixin):
     def repeat_timer(self, interval):
         raise NotImplementedError
 
-    def _before_run(self):
-        self._start_repeat_timers()
+    def _before_worker_run(self):
+        self.events.create_worker()
+        for bp in self.blueprints:
+            bp.events.create_app_worker()
+
+        self.events.repeat_timer()
+        for bp in self.blueprints:
+            bp.events.repeat_app_timer()
 
     def _try_serve_forever(self, main_process):
         if not main_process:
             self._handle_child_proc_signals()
 
-        self.events.create_worker()
-        for bp in self.blueprints:
-            bp.events.create_app_worker()
+        self._before_worker_run()
 
         try:
             self._serve_forever()
@@ -123,11 +125,6 @@ class Haven(RoutesMixin, AppEventsMixin):
     def _handle_child_proc_signals(self):
         signal.signal(signal.SIGTERM, signal.SIG_DFL)
         signal.signal(signal.SIGINT, signal.SIG_IGN)
-
-    def _start_repeat_timers(self):
-        self.events.repeat_timer()
-        for bp in self.blueprints:
-            bp.events.repeat_app_timer()
 
     def _prepare_server(self, host, port):
         raise NotImplementedError
