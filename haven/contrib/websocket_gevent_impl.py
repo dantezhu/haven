@@ -5,6 +5,7 @@ websocket协议支持
 """
 
 import re
+import socket
 import gevent.wsgi
 from geventwebsocket.handler import WebSocketHandler
 from netkit.stream import Stream
@@ -16,6 +17,12 @@ class WSStream(Stream):
     def read_from_fd(self):
         try:
             chunk = self.sock.receive()
+        except socket.timeout, e:
+            # 服务器是不会recv超时的
+            raise e
+        except KeyboardInterrupt, e:
+            # 中断
+            raise e
         except:
             logger.error('exc occur.', exc_info=True)
             # 其他都直接关闭
@@ -32,6 +39,9 @@ class WSStream(Stream):
     def write_to_fd(self, data):
         try:
             return self.sock.send(data)
+        except KeyboardInterrupt, e:
+            # 中断
+            raise e
         except:
             logger.error('exc occur. data: %r', data, exc_info=True)
             return None
@@ -39,6 +49,9 @@ class WSStream(Stream):
     def close_fd(self):
         try:
             self.sock.close()
+        except KeyboardInterrupt, e:
+            # 中断
+            raise e
         except:
             logger.error('exc occur.', exc_info=True)
         finally:
@@ -47,6 +60,9 @@ class WSStream(Stream):
     def shutdown_fd(self, how=2):
         try:
             self.sock.stream.handler.socket.shutdown(how)
+        except KeyboardInterrupt, e:
+            # 中断
+            raise e
         except:
             logger.error('exc occur.', exc_info=True)
 
