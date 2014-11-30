@@ -16,19 +16,23 @@ from . import constants
 
 class THaven(Haven):
 
+    server_class = ThreadingTCPServer
+    connection_class = Connection
+    request_class = Request
+    stream_class = Stream
+
+    box_class = None
+    stream_checker = None
+
     backlog = constants.SERVER_BACKLOG
     server = None
     got_first_request_lock = None
 
-    def __init__(self, box_class, server_class=None, connection_class=None, request_class=None, stream_class=None):
+    def __init__(self, box_class):
         super(THaven, self).__init__()
         self.box_class = box_class
-        self.server_class = server_class or ThreadingTCPServer
-        self.connection_class = connection_class or Connection
-        self.request_class = request_class or Request
-        self.stream_class = stream_class or Stream
-        self.got_first_request_lock = Lock()
         self.stream_checker = self.box_class().check
+        self.got_first_request_lock = Lock()
 
     def repeat_timer(self, interval):
         def inner_repeat_timer(func):

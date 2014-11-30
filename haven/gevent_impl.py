@@ -26,16 +26,20 @@ class GConnection(Connection):
 
 class GHaven(Haven):
 
+    server_class = StreamServer
+    connection_class = GConnection
+    request_class = Request
+    stream_class = Stream
+
+    box_class = None
+    stream_checker = None
+
     backlog = constants.SERVER_BACKLOG
     server = None
 
-    def __init__(self, box_class, server_class=None, connection_class=None, request_class=None, stream_class=None):
+    def __init__(self, box_class):
         super(GHaven, self).__init__()
         self.box_class = box_class
-        self.server_class = server_class or StreamServer
-        self.connection_class = connection_class or GConnection
-        self.request_class = request_class or Request
-        self.stream_class = stream_class or Stream
         self.stream_checker = self.box_class().check
 
     def handle_stream(self, sock, address):
