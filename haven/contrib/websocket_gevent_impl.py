@@ -6,6 +6,7 @@ websocket协议支持
 
 import re
 import socket
+import errno
 import gevent.wsgi
 from geventwebsocket.handler import WebSocketHandler
 from netkit.stream import Stream
@@ -20,6 +21,12 @@ class WSStream(Stream):
         except socket.timeout, e:
             # 服务器是不会recv超时的
             raise e
+        except socket.error, e:
+            if e.errno == errno.EINTR:
+                # 中断，返回空字符串，但不断掉连接
+                return ''
+            else:
+                raise e
         except KeyboardInterrupt, e:
             # 中断
             raise e
