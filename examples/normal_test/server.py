@@ -53,6 +53,7 @@ def repeat_timer():
 
 @app.route(1)
 def index(request):
+    logger.error('request: %s', request)
     request.write(dict(ret=100))
 
 

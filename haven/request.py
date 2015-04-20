@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import numbers
 from .log import logger
 
 
@@ -14,8 +13,7 @@ class Request(object):
     box = None
     is_valid = False
     blueprint = None
-    blueprint_name = None
-    blueprint_cmd = None
+    route_rule = None
 
     def __init__(self, conn, raw_data):
         self.conn = conn
@@ -30,25 +28,28 @@ class Request(object):
             return False
 
         if self.box.unpack(self.raw_data) > 0:
-            self._parse_blueprint_info()
+            self._parse_route_rule()
             return True
         else:
             logger.error('unpack fail. request: %s', self)
             return False
 
-    def _parse_blueprint_info(self):
+    def _parse_route_rule(self):
         if self.cmd is None:
             return
 
-        cmd_parts = str(self.cmd).split('.')
-        self.blueprint_name, self.blueprint_cmd = cmd_parts if len(cmd_parts) == 2 else (None, self.cmd)
+        route_rule = self.app.get_route_rule(self.cmd)
+        if route_rule:
+            # 在app层，直接返回
+            self.route_rule = route_rule
+            return
 
         for bp in self.app.blueprints:
-            if self.blueprint_name == bp.name or isinstance(self.blueprint_cmd, numbers.Number):
-                # blueprint name 匹配; 或者cmd是数字类型，即与blueprint name无关
-                if bp.get_route_view_func(self.blueprint_cmd):
-                    self.blueprint = bp
-                    break
+            route_rule = bp.get_route_rule(self.cmd)
+            if route_rule:
+                self.blueprint = bp
+                self.route_rule = route_rule
+                break
 
     @property
     def app(self):
@@ -65,6 +66,19 @@ class Request(object):
         except:
             return None
 
+    @property
+    def view_func(self):
+        return self.route_rule['view_func'] if self.route_rule else None
+
+    @property
+    def endpoint(self):
+        if not self.route_rule:
+            return None
+
+        bp_endpoint = self.route_rule['endpoint']
+
+        return '.'.join([self.blueprint.name, bp_endpoint] if self.blueprint else [bp_endpoint])
+
     def write(self, data):
         if isinstance(data, dict):
             # 生成box
@@ -75,4 +89,6 @@ class Request(object):
         self.conn.close(exc_info)
 
     def __repr__(self):
-        return 'client_address: %r, cmd: %r, raw_data: %r' % (self.address, self.cmd, self.raw_data)
+        return 'client_address: %r, cmd: %r, endpoint: %s, raw_data: %r' % (
+            self.address, self.cmd, self.endpoint, self.raw_data
+        )

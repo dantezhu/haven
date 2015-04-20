@@ -7,6 +7,7 @@ bp = Blueprint('user')
 
 @bp.route(101)
 def login(request):
+    logger.error('request: %s', request)
     request.write(dict(ret=101, body=repr(request.address)))
 
 @bp.create_app_worker

@@ -8,7 +8,7 @@ class Blueprint(RoutesMixin, BlueprintEventsMixin):
     name = None
     app = None
 
-    def __init__(self, name=None):
+    def __init__(self, name):
         RoutesMixin.__init__(self)
         BlueprintEventsMixin.__init__(self)
         self.name = name
