@@ -123,8 +123,8 @@ class Connection(object):
         try:
             view_func_result = request.view_func(request)
         except Exception, e:
-            logger.error('view_func raise exception. request: %s, view_func: %s, e: %s',
-                         request, request.view_func, e, exc_info=True)
+            logger.error('view_func raise exception. request: %s, e: %s',
+                         request, e, exc_info=True)
             view_func_exc = e
             request.write(dict(ret=constants.RET_INTERNAL))
 
