@@ -20,7 +20,7 @@ class RoutesMixin(object):
         if cmd in self.rule_map and view_func != self.rule_map[cmd]['view_func']:
             raise Exception, 'duplicate view_func for cmd: %(cmd)s, old_view_func:%(old_view_func)s, new_view_func: %(new_view_func)s' % dict(
                 cmd=cmd,
-                old_view_func=self.rule_map[cmd],
+                old_view_func=self.rule_map[cmd]['view_func'],
                 new_view_func=view_func,
             )
 
