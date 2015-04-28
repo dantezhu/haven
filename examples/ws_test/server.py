@@ -31,7 +31,7 @@ def timer():
 
 if __name__ != '__main__':
     # 启动timer之类的
-    app._before_run()
+    app._before_worker_run()
 
 if __name__ == '__main__':
     app.run('127.0.0.1', 8000, workers=2)

@@ -3,6 +3,7 @@
 from multiprocessing import Process
 import time
 import signal
+from collections import Counter
 
 from .mixins import RoutesMixin, AppEventsMixin
 from . import autoreload
@@ -24,6 +25,8 @@ class Haven(RoutesMixin, AppEventsMixin):
         blueprint.register_to_app(self)
 
     def run(self, host=None, port=None, debug=None, use_reloader=None, workers=None, handle_signals=None):
+        self._validate_cmds()
+
         if host is None:
             host = constants.SERVER_HOST
         if port is None:
@@ -61,6 +64,21 @@ class Haven(RoutesMixin, AppEventsMixin):
 
     def repeat_timer(self, interval):
         raise NotImplementedError
+
+    def _validate_cmds(self):
+        """
+        确保 cmd 没有重复
+        :return:
+        """
+
+        cmd_list = list(self.rule_map.keys())
+
+        for bp in self.blueprints:
+            cmd_list.extend(bp.rule_map.keys())
+
+        duplicate_cmds = (Counter(cmd_list) - Counter(set(cmd_list))).keys()
+
+        assert not duplicate_cmds, 'duplicate cmds: %s' % duplicate_cmds
 
     def _before_worker_run(self):
         self.events.create_worker()
