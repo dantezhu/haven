@@ -36,7 +36,7 @@ def before_app_request(request):
 
 @bp.after_app_request
 def after_app_request(request, exc):
-    logger.error('bp.after_app_request')
+    logger.error('bp.after_app_request: %s', exc)
 
 
 @bp.before_request
@@ -46,7 +46,7 @@ def before_request(request):
 
 @bp.after_request
 def after_request(request, exc):
-    logger.error('bp.after_request')
+    logger.error('bp.after_request: %s', exc)
 
 
 @bp.before_app_response
