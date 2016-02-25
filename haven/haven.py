@@ -17,8 +17,6 @@ class Haven(RoutesMixin, AppEventsMixin):
     debug = False
     got_first_request = False
     blueprints = None
-    # 停止子进程超时(秒). 使用 TERM 进行停止时，如果超时未停止会发送KILL信号
-    stop_timeout = None
 
     def __init__(self):
         RoutesMixin.__init__(self)
@@ -129,9 +127,9 @@ class Haven(RoutesMixin, AppEventsMixin):
                 if p and not p.is_alive():
                     self.processes[idx] = None
 
-                if self.enable:
-                    p = start_worker_process()
-                    self.processes[idx] = p
+                    if self.enable:
+                        p = start_worker_process()
+                        self.processes[idx] = p
 
             if not filter(lambda x: x, self.processes):
                 # 没活着的了
@@ -149,25 +147,12 @@ class Haven(RoutesMixin, AppEventsMixin):
             # 所以这里可能会导致重复发送的问题，重复发送会导致一些子进程异常，所以在子进程内部有做重复处理判断。
             for p in self.processes:
                 if p:
-                    p._popen.send_signal(signum)
-
-            # https://docs.python.org/2/library/signal.html#signal.alarm
-            if self.stop_timeout is not None:
-                signal.alarm(self.stop_timeout)
-
-        def final_kill_handler(signum, frame):
-            if not self.enable:
-                # 只有满足了not enable，才发送term命令
-                for p in self.processes:
-                    if p:
-                        p._popen.send_signal(signal.SIGKILL)
+                    p.terminate()
 
         # INT, QUIT, TERM为强制结束
         signal.signal(signal.SIGINT, exit_handler)
         signal.signal(signal.SIGQUIT, exit_handler)
         signal.signal(signal.SIGTERM, exit_handler)
-        # 最终判决，KILL掉子进程
-        signal.signal(signal.SIGALRM, final_kill_handler)
 
     def _handle_child_proc_signals(self):
         def exit_handler(signum, frame):
