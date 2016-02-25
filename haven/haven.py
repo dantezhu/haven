@@ -43,10 +43,6 @@ class Haven(RoutesMixin, AppEventsMixin):
         use_reloader = use_reloader if use_reloader is not None else self.debug
         if use_reloader and workers is not None:
             # 当 use_reloader 打开的时候，workers会强制变为None
-            logger.warning(
-                'use_reloader is %s, workers will be changed from %s to None.',
-                use_reloader, workers
-            )
             workers = None
 
         def run_wrapper():
