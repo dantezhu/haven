@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import sys
 from multiprocessing import Process
 import time
 import signal
 from collections import Counter
+import setproctitle
 
 from .mixins import RoutesMixin, AppEventsMixin
 from . import autoreload
@@ -12,6 +14,9 @@ from . import constants
 
 
 class Haven(RoutesMixin, AppEventsMixin):
+    enable = True
+    name = constants.NAME
+    processes = None
     debug = False
     got_first_request = False
     blueprints = None
@@ -19,12 +24,13 @@ class Haven(RoutesMixin, AppEventsMixin):
     def __init__(self):
         RoutesMixin.__init__(self)
         AppEventsMixin.__init__(self)
+        self.processes = []
         self.blueprints = list()
 
     def register_blueprint(self, blueprint):
         blueprint.register_to_app(self)
 
-    def run(self, host=None, port=None, debug=None, use_reloader=None, workers=None, handle_signals=None):
+    def run(self, host=None, port=None, debug=None, use_reloader=None, workers=None):
         self._validate_cmds()
 
         if host is None:
@@ -35,18 +41,23 @@ class Haven(RoutesMixin, AppEventsMixin):
             self.debug = debug
 
         use_reloader = use_reloader if use_reloader is not None else self.debug
-        handle_signals = handle_signals if handle_signals is not None else not use_reloader
+        if use_reloader and workers is not None:
+            # 当 use_reloader 打开的时候，workers会强制变为None
+            logger.warning(
+                'use_reloader is %s, workers will be changed from %s to None.',
+                use_reloader, workers
+            )
+            workers = None
 
         def run_wrapper():
-            logger.info('Running server on %s:%s, debug: %s, use_reloader: %s',
-                        host, port, self.debug, use_reloader)
+            logger.info('Running server on %s:%s, debug: %s, use_reloader: %s, workers: %s',
+                        host, port, self.debug, use_reloader, workers)
 
             self._prepare_server(host, port)
             if workers is not None:
-                if handle_signals:
-                    # 因为只能在主线程里面设置signals
-                    self._handle_parent_proc_signals()
-
+                setproctitle.setproctitle(self._make_proc_name('master'))
+                # 只能在主线程里面设置signals
+                self._handle_parent_proc_signals()
                 self._fork_workers(workers)
             else:
                 self._try_serve_forever(True)
@@ -64,6 +75,21 @@ class Haven(RoutesMixin, AppEventsMixin):
 
     def repeat_timer(self, interval):
         raise NotImplementedError
+
+    def _make_proc_name(self, subtitle):
+        """
+        获取进程名称
+        :param subtitle:
+        :return:
+        """
+        proc_name = '[%s %s:%s] %s' % (
+            self.name,
+            constants.NAME,
+            subtitle,
+            ' '.join([sys.executable] + sys.argv)
+        )
+
+        return proc_name
 
     def _validate_cmds(self):
         """
@@ -90,8 +116,12 @@ class Haven(RoutesMixin, AppEventsMixin):
             bp.events.repeat_app_timer()
 
     def _try_serve_forever(self, main_process):
+        # 无论是否有master，这里都是worker
         if not main_process:
+            setproctitle.setproctitle(self._make_proc_name('worker'))
             self._handle_child_proc_signals()
+        else:
+            setproctitle.setproctitle(self._make_proc_name('main'))
 
         self._before_worker_run()
 
@@ -107,42 +137,58 @@ class Haven(RoutesMixin, AppEventsMixin):
             inner_p = Process(target=self._try_serve_forever, args=(False,))
             # 当前进程daemon默认是False，改成True将启动不了子进程
             # 但是子进程要设置daemon为True，这样父进程退出，子进程会被强制关闭
-            inner_p.daemon = True
+            # 现在父进程会在子进程之后推出，没必要设置了
+            # inner_p.daemon = True
             inner_p.start()
             return inner_p
 
-        p_list = []
-
         for it in xrange(0, workers):
             p = start_worker_process()
-            p_list.append(p)
+            self.processes.append(p)
 
         while 1:
-            for idx, p in enumerate(p_list):
-                if not p.is_alive():
-                    old_pid = p.pid
-                    p = start_worker_process()
-                    p_list[idx] = p
+            for idx, p in enumerate(self.processes):
+                if p and not p.is_alive():
+                    self.processes[idx] = None
 
-                    logger.error('process[%s] is dead. start new process[%s].', old_pid, p.pid)
+                    if self.enable:
+                        p = start_worker_process()
+                        self.processes[idx] = p
 
-            try:
-                time.sleep(1)
-            except KeyboardInterrupt:
+            if not filter(lambda x: x, self.processes):
+                # 没活着的了
                 break
-            except:
-                logger.error('exc occur.', exc_info=True)
-                break
+
+            # 时间短点，退出的快一些
+            time.sleep(0.1)
 
     def _handle_parent_proc_signals(self):
-        # 修改SIGTERM，否则父进程被term，子进程不会自动退出；明明子进程都设置为daemon了的
-        signal.signal(signal.SIGTERM, signal.default_int_handler)
-        # 即使对于SIGINT，SIG_DFL和default_int_handler也是不一样的，要是想要抛出KeyboardInterrupt，应该用default_int_handler
-        signal.signal(signal.SIGINT, signal.default_int_handler)
+        def exit_handler(signum, frame):
+            self.enable = False
+
+            # 如果是终端直接CTRL-C，子进程自然会在父进程之后收到INT信号，不需要再写代码发送
+            # 如果直接kill -INT $parent_pid，子进程不会自动收到INT
+            # 所以这里可能会导致重复发送的问题，重复发送会导致一些子进程异常，所以在子进程内部有做重复处理判断。
+            for p in self.processes:
+                if p:
+                    p.terminate()
+
+        # INT, QUIT, TERM为强制结束
+        signal.signal(signal.SIGINT, exit_handler)
+        signal.signal(signal.SIGQUIT, exit_handler)
+        signal.signal(signal.SIGTERM, exit_handler)
 
     def _handle_child_proc_signals(self):
-        signal.signal(signal.SIGTERM, signal.SIG_DFL)
-        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        def exit_handler(signum, frame):
+            # 防止重复处理KeyboardInterrupt，导致抛出异常
+            if self.enable:
+                self.enable = False
+                raise KeyboardInterrupt
+
+        # 强制结束，抛出异常终止程序进行
+        signal.signal(signal.SIGINT, exit_handler)
+        signal.signal(signal.SIGQUIT, exit_handler)
+        signal.signal(signal.SIGTERM, exit_handler)
 
     def _prepare_server(self, host, port):
         raise NotImplementedError

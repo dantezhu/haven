@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-LOGGER_NAME = 'haven'
+NAME = 'haven'
 
 # 系统返回码
 RET_INVALID_CMD = -10000

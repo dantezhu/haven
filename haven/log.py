@@ -4,4 +4,4 @@ import logging
 
 from . import constants
 
-logger = logging.getLogger(constants.LOGGER_NAME)
+logger = logging.getLogger(constants.NAME)
