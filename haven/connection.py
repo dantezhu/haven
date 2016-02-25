@@ -117,6 +117,10 @@ class Connection(object):
         if request.blueprint:
             request.blueprint.events.before_request(request)
 
+        if request.interrupted:
+            # 业务要求中断
+            return True
+
         view_func_exc = None
 
         try:
