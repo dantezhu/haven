@@ -24,7 +24,7 @@ class Haven(RoutesMixin, AppEventsMixin):
     def register_blueprint(self, blueprint):
         blueprint.register_to_app(self)
 
-    def run(self, host=None, port=None, debug=None, use_reloader=None, workers=None, handle_signals=None):
+    def run(self, host=None, port=None, debug=None, use_reloader=None, workers=None):
         self._validate_cmds()
 
         if host is None:
@@ -35,18 +35,22 @@ class Haven(RoutesMixin, AppEventsMixin):
             self.debug = debug
 
         use_reloader = use_reloader if use_reloader is not None else self.debug
-        handle_signals = handle_signals if handle_signals is not None else not use_reloader
+        if use_reloader and workers is not None:
+            # 当 use_reloader 打开的时候，workers会强制变为None
+            logger.warning(
+                'use_reloader is %s, workers will be changed from %s to None.',
+                use_reloader, workers
+            )
+            workers = None
 
         def run_wrapper():
-            logger.info('Running server on %s:%s, debug: %s, use_reloader: %s',
-                        host, port, self.debug, use_reloader)
+            logger.info('Running server on %s:%s, debug: %s, use_reloader: %s, workers: %s',
+                        host, port, self.debug, use_reloader, workers)
 
             self._prepare_server(host, port)
             if workers is not None:
-                if handle_signals:
-                    # 因为只能在主线程里面设置signals
-                    self._handle_parent_proc_signals()
-
+                # 只能在主线程里面设置signals
+                self._handle_parent_proc_signals()
                 self._fork_workers(workers)
             else:
                 self._try_serve_forever(True)
