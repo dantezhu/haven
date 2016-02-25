@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import sys
 from multiprocessing import Process
 import time
 import signal
 from collections import Counter
+import setproctitle
 
 from .mixins import RoutesMixin, AppEventsMixin
 from . import autoreload
@@ -13,6 +15,7 @@ from . import constants
 
 class Haven(RoutesMixin, AppEventsMixin):
     enable = True
+    name = constants.NAME
     processes = None
     debug = False
     got_first_request = False
@@ -52,6 +55,7 @@ class Haven(RoutesMixin, AppEventsMixin):
 
             self._prepare_server(host, port)
             if workers is not None:
+                setproctitle.setproctitle(self._make_proc_name('master'))
                 # 只能在主线程里面设置signals
                 self._handle_parent_proc_signals()
                 self._fork_workers(workers)
@@ -71,6 +75,21 @@ class Haven(RoutesMixin, AppEventsMixin):
 
     def repeat_timer(self, interval):
         raise NotImplementedError
+
+    def _make_proc_name(self, subtitle):
+        """
+        获取进程名称
+        :param subtitle:
+        :return:
+        """
+        proc_name = '[%s %s:%s] %s' % (
+            self.name,
+            constants.NAME,
+            subtitle,
+            ' '.join([sys.executable] + sys.argv)
+        )
+
+        return proc_name
 
     def _validate_cmds(self):
         """
@@ -97,8 +116,12 @@ class Haven(RoutesMixin, AppEventsMixin):
             bp.events.repeat_app_timer()
 
     def _try_serve_forever(self, main_process):
+        # 无论是否有master，这里都是worker
         if not main_process:
+            setproctitle.setproctitle(self._make_proc_name('worker'))
             self._handle_child_proc_signals()
+        else:
+            setproctitle.setproctitle(self._make_proc_name('main'))
 
         self._before_worker_run()
 
@@ -114,7 +137,8 @@ class Haven(RoutesMixin, AppEventsMixin):
             inner_p = Process(target=self._try_serve_forever, args=(False,))
             # 当前进程daemon默认是False，改成True将启动不了子进程
             # 但是子进程要设置daemon为True，这样父进程退出，子进程会被强制关闭
-            inner_p.daemon = True
+            # 现在父进程会在子进程之后推出，没必要设置了
+            # inner_p.daemon = True
             inner_p.start()
             return inner_p
 
