@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import sys
+sys.path.insert(0, '../../')
 import logging
 
 from reimp import Haven, logger, Box
