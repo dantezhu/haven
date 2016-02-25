@@ -34,4 +34,4 @@ if __name__ != '__main__':
     app._before_worker_run()
 
 if __name__ == '__main__':
-    app.run('127.0.0.1', 8000, workers=2)
+    app.run('127.0.0.1', 8000)
