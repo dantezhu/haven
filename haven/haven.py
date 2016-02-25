@@ -12,13 +12,18 @@ from . import constants
 
 
 class Haven(RoutesMixin, AppEventsMixin):
+    enable = True
+    processes = None
     debug = False
     got_first_request = False
     blueprints = None
+    # 停止子进程超时(秒). 使用 TERM 进行停止时，如果超时未停止会发送KILL信号
+    stop_timeout = None
 
     def __init__(self):
         RoutesMixin.__init__(self)
         AppEventsMixin.__init__(self)
+        self.processes = []
         self.blueprints = list()
 
     def register_blueprint(self, blueprint):
@@ -115,38 +120,66 @@ class Haven(RoutesMixin, AppEventsMixin):
             inner_p.start()
             return inner_p
 
-        p_list = []
-
         for it in xrange(0, workers):
             p = start_worker_process()
-            p_list.append(p)
+            self.processes.append(p)
 
         while 1:
-            for idx, p in enumerate(p_list):
-                if not p.is_alive():
-                    old_pid = p.pid
+            for idx, p in enumerate(self.processes):
+                if p and not p.is_alive():
+                    self.processes[idx] = None
+
+                if self.enable:
                     p = start_worker_process()
-                    p_list[idx] = p
+                    self.processes[idx] = p
 
-                    logger.error('process[%s] is dead. start new process[%s].', old_pid, p.pid)
+            if not filter(lambda x: x, self.processes):
+                # 没活着的了
+                break
 
-            try:
-                time.sleep(1)
-            except KeyboardInterrupt:
-                break
-            except:
-                logger.error('exc occur.', exc_info=True)
-                break
+            # 时间短点，退出的快一些
+            time.sleep(0.1)
 
     def _handle_parent_proc_signals(self):
-        # 修改SIGTERM，否则父进程被term，子进程不会自动退出；明明子进程都设置为daemon了的
-        signal.signal(signal.SIGTERM, signal.default_int_handler)
-        # 即使对于SIGINT，SIG_DFL和default_int_handler也是不一样的，要是想要抛出KeyboardInterrupt，应该用default_int_handler
-        signal.signal(signal.SIGINT, signal.default_int_handler)
+        def exit_handler(signum, frame):
+            self.enable = False
+
+            # 如果是终端直接CTRL-C，子进程自然会在父进程之后收到INT信号，不需要再写代码发送
+            # 如果直接kill -INT $parent_pid，子进程不会自动收到INT
+            # 所以这里可能会导致重复发送的问题，重复发送会导致一些子进程异常，所以在子进程内部有做重复处理判断。
+            for p in self.processes:
+                if p:
+                    p._popen.send_signal(signum)
+
+            # https://docs.python.org/2/library/signal.html#signal.alarm
+            if self.stop_timeout is not None:
+                signal.alarm(self.stop_timeout)
+
+        def final_kill_handler(signum, frame):
+            if not self.enable:
+                # 只有满足了not enable，才发送term命令
+                for p in self.processes:
+                    if p:
+                        p._popen.send_signal(signal.SIGKILL)
+
+        # INT, QUIT, TERM为强制结束
+        signal.signal(signal.SIGINT, exit_handler)
+        signal.signal(signal.SIGQUIT, exit_handler)
+        signal.signal(signal.SIGTERM, exit_handler)
+        # 最终判决，KILL掉子进程
+        signal.signal(signal.SIGALRM, final_kill_handler)
 
     def _handle_child_proc_signals(self):
-        signal.signal(signal.SIGTERM, signal.SIG_DFL)
-        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        def exit_handler(signum, frame):
+            # 防止重复处理KeyboardInterrupt，导致抛出异常
+            if self.enable:
+                self.enable = False
+                raise KeyboardInterrupt
+
+        # 强制结束，抛出异常终止程序进行
+        signal.signal(signal.SIGINT, exit_handler)
+        signal.signal(signal.SIGQUIT, exit_handler)
+        signal.signal(signal.SIGTERM, exit_handler)
 
     def _prepare_server(self, host, port):
         raise NotImplementedError
