@@ -31,6 +31,16 @@ class Haven(RoutesMixin, AppEventsMixin):
         blueprint.register_to_app(self)
 
     def run(self, host=None, port=None, debug=None, use_reloader=None, workers=None):
+        """
+        启动
+        :param host: 监听IP
+        :param port: 监听端口
+        :param debug: 是否debug
+        :param use_reloader: 代码修改后，是否自动重启。如果没有赋值，则赋值为debug
+        :param workers: None: 代表以单进程模式启动；数字: 代表以master-worker方式启动。
+            如果为user_reloader为True，会强制赋值为None
+        :return:
+        """
         self._validate_cmds()
 
         if host is None:
