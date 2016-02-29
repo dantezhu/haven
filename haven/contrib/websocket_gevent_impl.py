@@ -96,7 +96,7 @@ class WSGHaven(GHaven):
         if re.match(self.path_pattern, path):
             ws = environ['wsgi.websocket']
             address = (environ.get('REMOTE_ADDR'), environ.get('REMOTE_PORT'))
-            self.handle_stream(ws, address)
+            self._handle_stream(ws, address)
         else:
             if self.merge_wsgi_app:
                 return self.merge_wsgi_app(environ, start_response)

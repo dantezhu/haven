@@ -42,7 +42,7 @@ class GHaven(Haven):
         self.box_class = box_class
         self.stream_checker = self.box_class().check
 
-    def handle_stream(self, sock, address):
+    def _handle_stream(self, sock, address):
         self.connection_class(
             self, self.stream_class(sock, use_gevent=True), address
         ).handle()
@@ -56,7 +56,7 @@ class GHaven(Haven):
         return inner_repeat_timer
 
     def _prepare_server(self, host, port):
-        self.server = self.server_class((host, port), handle=self.handle_stream, backlog=self.backlog)
+        self.server = self.server_class((host, port), handle=self._handle_stream, backlog=self.backlog)
         self.server.start()
 
     def _serve_forever(self):
