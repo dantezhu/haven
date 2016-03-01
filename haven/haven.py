@@ -14,9 +14,9 @@ from . import constants
 
 
 class Haven(RoutesMixin, AppEventsMixin):
-    # configurable begin
+    ############################## configurable begin ##############################
     name = constants.NAME
-    # configurable end
+    ############################## configurable end   ##############################
 
     enable = True
     processes = None
@@ -71,9 +71,9 @@ class Haven(RoutesMixin, AppEventsMixin):
                 setproctitle.setproctitle(self._make_proc_name('master'))
                 # 只能在主线程里面设置signals
                 self._handle_parent_proc_signals()
-                self._fork_workers(workers)
+                self._spawn_workers(workers, self._worker_run)
             else:
-                self._try_serve_forever(True)
+                self._worker_run(True)
 
         if use_reloader:
             autoreload.main(run_wrapper)
@@ -119,7 +119,7 @@ class Haven(RoutesMixin, AppEventsMixin):
 
         assert not duplicate_cmds, 'duplicate cmds: %s' % duplicate_cmds
 
-    def _before_worker_run(self):
+    def _on_worker_run(self):
         self.events.create_worker()
         for bp in self.blueprints:
             bp.events.create_app_worker()
@@ -128,7 +128,7 @@ class Haven(RoutesMixin, AppEventsMixin):
         for bp in self.blueprints:
             bp.events.repeat_app_timer()
 
-    def _try_serve_forever(self, main_process):
+    def _worker_run(self, main_process):
         # 无论是否有master，这里都是worker
         if not main_process:
             setproctitle.setproctitle(self._make_proc_name('worker'))
@@ -136,7 +136,7 @@ class Haven(RoutesMixin, AppEventsMixin):
         else:
             setproctitle.setproctitle(self._make_proc_name('main'))
 
-        self._before_worker_run()
+        self._on_worker_run()
 
         try:
             self._serve_forever()
@@ -145,9 +145,9 @@ class Haven(RoutesMixin, AppEventsMixin):
         except:
             logger.error('exc occur.', exc_info=True)
 
-    def _fork_workers(self, workers):
+    def _spawn_workers(self, workers, target):
         def start_worker_process():
-            inner_p = Process(target=self._try_serve_forever, args=(False,))
+            inner_p = Process(target=target, args=(False,))
             # 当前进程daemon默认是False，改成True将启动不了子进程
             # 但是子进程要设置daemon为True，这样父进程退出，子进程会被强制关闭
             # 现在父进程会在子进程之后推出，没必要设置了
