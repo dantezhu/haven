@@ -14,9 +14,9 @@ from . import constants
 
 
 class Haven(RoutesMixin, AppEventsMixin):
-    # config begin
+    # configurable begin
     name = constants.NAME
-    # config end
+    # configurable end
 
     enable = True
     processes = None
