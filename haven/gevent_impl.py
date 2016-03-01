@@ -56,8 +56,10 @@ class GHaven(Haven):
         return inner_repeat_timer
 
     def _prepare_server(self, host, port):
-        self.server = self.server_class((host, port), handle=self._handle_stream, backlog=self.backlog)
-        self.server.start()
+        import _socket
+        # 只有这样，才能保证在主进程里面，不会启动accept
+        listener = self.server_class.get_listener((host, port), backlog=self.backlog, family=_socket.AF_INET)
+        self.server = self.server_class(listener, handle=self._handle_stream)
 
     def _serve_forever(self):
         self.server.serve_forever()
