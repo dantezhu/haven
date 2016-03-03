@@ -48,7 +48,7 @@ class THaven(Haven):
     def release_got_first_request(self):
         self.got_first_request_lock.release()
 
-    def _prepare_server(self, host, port):
+    def _prepare_server(self, address):
         class RequestHandler(StreamRequestHandler):
             def handle(sub_self):
                 self.connection_class(
@@ -62,7 +62,7 @@ class THaven(Haven):
             # 必须在server_bind之前
             allow_reuse_address = True
 
-        self.server = MyServer((host, port), RequestHandler)
+        self.server = MyServer(address, RequestHandler)
 
     def _serve_forever(self):
         self.server.serve_forever()

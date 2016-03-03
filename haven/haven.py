@@ -66,7 +66,7 @@ class Haven(RoutesMixin, AppEventsMixin):
             logger.info('Running server on %s:%s, debug: %s, use_reloader: %s, workers: %s',
                         host, port, self.debug, use_reloader, workers)
 
-            self._prepare_server(host, port)
+            self._prepare_server((host, port))
             if workers is not None:
                 setproctitle.setproctitle(self._make_proc_name('master'))
                 # 只能在主线程里面设置signals
@@ -203,7 +203,7 @@ class Haven(RoutesMixin, AppEventsMixin):
         signal.signal(signal.SIGQUIT, exit_handler)
         signal.signal(signal.SIGTERM, exit_handler)
 
-    def _prepare_server(self, host, port):
+    def _prepare_server(self, address):
         raise NotImplementedError
 
     def _serve_forever(self):

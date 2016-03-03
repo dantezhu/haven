@@ -107,10 +107,10 @@ class WSGHaven(GHaven):
     def __call__(self, environ, start_response):
         return self.wsgi_app(environ, start_response)
 
-    def _prepare_server(self, host, port):
+    def _prepare_server(self, address):
         import _socket
         # 只有这样，才能保证在主进程里面，不会启动accept
-        listener = self.server_class.get_listener((host, port), backlog=self.backlog, family=_socket.AF_INET)
+        listener = self.server_class.get_listener(address, backlog=self.backlog, family=_socket.AF_INET)
         self.server = gevent.wsgi.WSGIServer(listener, self.wsgi_app,
                                              backlog=self.backlog, handler_class=WebSocketHandler)
 
