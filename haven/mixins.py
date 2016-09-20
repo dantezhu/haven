@@ -16,23 +16,25 @@ class RoutesMixin(object):
     def __init__(self):
         self.rule_map = dict()
 
-    def add_route_rule(self, cmd, view_func, **options):
+    def add_route_rule(self, cmd, view_func, endpoint=None):
         if cmd in self.rule_map and view_func != self.rule_map[cmd]['view_func']:
-            raise Exception, 'duplicate view_func for cmd: %(cmd)s, old_view_func:%(old_view_func)s, new_view_func: %(new_view_func)s' % dict(
-                cmd=cmd,
-                old_view_func=self.rule_map[cmd]['view_func'],
-                new_view_func=view_func,
+            raise Exception(
+                'duplicate view_func for cmd: %(cmd)s, old_view_func: %(old_view_func)s, new_view_func: %(new_view_func)s' % dict(
+                    cmd=cmd,
+                    old_view_func=self.rule_map[cmd]['view_func'],
+                    new_view_func=view_func,
+                )
             )
 
         self.rule_map[cmd] = dict(
-            endpoint=view_func.__name__,
+            endpoint=endpoint or view_func.__name__,
             view_func=view_func,
         )
 
-    def route(self, cmd, **options):
-        def decorator(f):
-            self.add_route_rule(cmd, f, **options)
-            return f
+    def route(self, cmd, endpoint=None):
+        def decorator(func):
+            self.add_route_rule(cmd, func, endpoint)
+            return func
         return decorator
 
     def get_route_rule(self, cmd):
