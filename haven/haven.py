@@ -8,7 +8,6 @@ from collections import Counter
 import setproctitle
 
 from .mixins import RoutesMixin, AppEventsMixin
-from . import autoreload
 from .log import logger
 from . import constants
 
@@ -33,15 +32,13 @@ class Haven(RoutesMixin, AppEventsMixin):
     def register_blueprint(self, blueprint):
         blueprint.register_to_app(self)
 
-    def run(self, host=None, port=None, debug=None, use_reloader=None, workers=None):
+    def run(self, host=None, port=None, debug=None, workers=None):
         """
         启动
         :param host: 监听IP
         :param port: 监听端口
         :param debug: 是否debug
-        :param use_reloader: 代码修改后，是否自动重启。如果没有赋值，则赋值为debug
-        :param workers: None: 代表以单进程模式启动；数字: 代表以master-worker方式启动。
-            如果为user_reloader为True，会强制赋值为None
+        :param workers: workers数量
         :return:
         """
         self._validate_cmds()
@@ -53,32 +50,16 @@ class Haven(RoutesMixin, AppEventsMixin):
         if debug is not None:
             self.debug = debug
 
-        use_reloader = use_reloader if use_reloader is not None else self.debug
-        if use_reloader and workers is not None:
-            # 当 use_reloader 打开的时候，workers会强制变为None
-            logger.warning(
-                'use_reloader is %s, workers will be changed from %s to None.',
-                use_reloader, workers
-            )
-            workers = None
+        workers = workers if workers is not None else 1
 
-        def run_wrapper():
-            logger.info('Running server on %s:%s, debug: %s, use_reloader: %s, workers: %s',
-                        host, port, self.debug, use_reloader, workers)
+        logger.info('Running server on %s:%s, debug: %s, workers: %s',
+                    host, port, self.debug, workers)
 
-            self._prepare_server((host, port))
-            if workers is not None:
-                setproctitle.setproctitle(self._make_proc_name('master'))
-                # 只能在主线程里面设置signals
-                self._handle_parent_proc_signals()
-                self._spawn_workers(workers, self._worker_run)
-            else:
-                self._worker_run(True)
-
-        if use_reloader:
-            autoreload.main(run_wrapper)
-        else:
-            run_wrapper()
+        self._prepare_server((host, port))
+        setproctitle.setproctitle(self._make_proc_name('master'))
+        # 只能在主线程里面设置signals
+        self._handle_parent_proc_signals()
+        self._spawn_workers(workers, self._worker_run)
 
     def acquire_got_first_request(self):
         pass
@@ -128,13 +109,9 @@ class Haven(RoutesMixin, AppEventsMixin):
         for bp in self.blueprints:
             bp.events.repeat_app_timer()
 
-    def _worker_run(self, main_process):
-        # 无论是否有master，这里都是worker
-        if not main_process:
-            setproctitle.setproctitle(self._make_proc_name('worker'))
-            self._handle_child_proc_signals()
-        else:
-            setproctitle.setproctitle(self._make_proc_name('main'))
+    def _worker_run(self):
+        setproctitle.setproctitle(self._make_proc_name('worker'))
+        self._handle_child_proc_signals()
 
         self._on_worker_run()
 
@@ -147,7 +124,7 @@ class Haven(RoutesMixin, AppEventsMixin):
 
     def _spawn_workers(self, workers, target):
         def start_worker_process():
-            inner_p = Process(target=target, args=(False,))
+            inner_p = Process(target=target)
             # 当前进程daemon默认是False，改成True将启动不了子进程
             # 但是子进程要设置daemon为True，这样父进程退出，子进程会被强制关闭
             # 现在父进程会在子进程之后推出，没必要设置了
