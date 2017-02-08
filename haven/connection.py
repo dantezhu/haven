@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import socket
+
 from . import constants
 from .log import logger
 
@@ -61,9 +63,13 @@ class Connection(object):
             self._read_message()
 
     def _read_message(self):
-        data = self.stream.read_with_checker(self.app.stream_checker)
-        if data:
-            self._on_read_complete(data)
+        try:
+            data = self.stream.read_with_checker(self.app.stream_checker)
+            if data:
+                self._on_read_complete(data)
+        except socket.timeout:
+            # 如果触发了超时，就代表我们增加client连接超时限制
+            self.close()
 
         # 在这里加上判断，因为如果在处理函数里关闭了conn，会导致无法触发on_connction_close
         if self.stream.closed():

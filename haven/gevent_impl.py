@@ -43,6 +43,8 @@ class GHaven(Haven):
         self.stream_checker = self.box_class().check
 
     def _handle_stream(self, sock, address):
+        if self.timeout is not None:
+            sock.settimeout(self.timeout)
         self.connection_class(
             self, self.stream_class(sock, use_gevent=True), address
         ).handle()
