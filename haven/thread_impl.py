@@ -51,6 +51,9 @@ class THaven(Haven):
     def _prepare_server(self, address):
         class RequestHandler(StreamRequestHandler):
             def handle(sub_self):
+                if self.timeout is not None:
+                    sub_self.connection.settimeout(self.timeout)
+
                 self.connection_class(
                     self, self.stream_class(sub_self.connection), sub_self.client_address
                 ).handle()

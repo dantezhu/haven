@@ -76,4 +76,5 @@ def repeat(request):
     request.write(dict(ret=100))
 
 app.register_blueprint(user.bp)
+app.timeout = 300
 app.run('127.0.0.1', 7777)
