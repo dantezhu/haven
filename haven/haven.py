@@ -15,7 +15,7 @@ from . import constants
 class Haven(RoutesMixin, AppEventsMixin):
     ############################## configurable begin ##############################
     name = constants.NAME
-    # client连接超时，None代表不超时
+    # 连接空闲超时，长期没收到消息被认为连接超时。None代表不超时
     timeout = None
     ############################## configurable end   ##############################
 
