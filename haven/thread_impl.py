@@ -64,6 +64,8 @@ class THaven(Haven):
             daemon_threads = True
             # 必须在server_bind之前
             allow_reuse_address = True
+            # 打开 TCP_NODELAY
+            disable_nagle_algorithm = True
 
         self.server = MyServer(address, RequestHandler)
 

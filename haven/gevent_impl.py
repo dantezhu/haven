@@ -4,6 +4,7 @@
 import gevent
 from gevent.server import StreamServer
 import functools
+import socket
 from netkit.stream import Stream
 
 from .connection import Connection
@@ -45,6 +46,9 @@ class GHaven(Haven):
     def _handle_stream(self, sock, address):
         if self.timeout is not None:
             sock.settimeout(self.timeout)
+
+        sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+
         self.connection_class(
             self, self.stream_class(sock, use_gevent=True), address
         ).handle()
