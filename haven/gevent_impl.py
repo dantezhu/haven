@@ -47,8 +47,6 @@ class GHaven(Haven):
         if self.timeout is not None:
             sock.settimeout(self.timeout)
 
-        sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-
         self.connection_class(
             self, self.stream_class(sock, use_gevent=True), address
         ).handle()
@@ -65,6 +63,7 @@ class GHaven(Haven):
         import _socket
         # 只有这样，才能保证在主进程里面，不会启动accept
         listener = self.server_class.get_listener(address, backlog=self.backlog, family=_socket.AF_INET)
+        listener.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.server = self.server_class(listener, handle=self._handle_stream)
 
     def _serve_forever(self):
