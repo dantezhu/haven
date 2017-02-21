@@ -50,6 +50,9 @@ class THaven(Haven):
 
     def _prepare_server(self, address):
         class RequestHandler(StreamRequestHandler):
+            # 打开 TCP_NODELAY
+            disable_nagle_algorithm = True
+
             def handle(sub_self):
                 if self.timeout is not None:
                     sub_self.connection.settimeout(self.timeout)
@@ -64,8 +67,6 @@ class THaven(Haven):
             daemon_threads = True
             # 必须在server_bind之前
             allow_reuse_address = True
-            # 打开 TCP_NODELAY
-            disable_nagle_algorithm = True
 
         self.server = MyServer(address, RequestHandler)
 
