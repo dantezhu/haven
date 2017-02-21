@@ -112,8 +112,7 @@ class WSGHaven(GHaven):
         # 只有这样，才能保证在主进程里面，不会启动accept
         listener = self.server_class.get_listener(address, backlog=self.backlog, family=_socket.AF_INET)
         listener.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-        self.server = gevent.wsgi.WSGIServer(listener, self.wsgi_app,
-                                             backlog=self.backlog, handler_class=WebSocketHandler)
+        self.server = gevent.wsgi.WSGIServer(listener, self.wsgi_app, handler_class=WebSocketHandler)
 
     def _serve_forever(self):
         self.server.serve_forever()
