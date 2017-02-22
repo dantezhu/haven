@@ -7,7 +7,6 @@ from haven import GHaven as App, GBlueprint as Blueprint
 # from melon import Melon as App, Blueprint
 
 from netkit.box import Box
-# from kola_box import KolaBox as Box
 
 from haven import logger
 
