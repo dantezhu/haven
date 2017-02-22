@@ -47,7 +47,7 @@ class WSStream(Stream):
 
     def write_to_fd(self, data):
         try:
-            return self.sock.send(data)
+            return self.sock.send(data, binary=True)
         except KeyboardInterrupt, e:
             # 中断
             raise e
