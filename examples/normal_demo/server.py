@@ -13,6 +13,10 @@ app = Haven(Box)
 def create_worker():
     logger.error('create_worker')
 
+@app.stop_worker
+def stop_worker():
+    logger.error('stop_worker')
+
 @app.create_conn
 def create_conn(conn):
     logger.error('create_conn')

@@ -113,6 +113,13 @@ class AppEventsMixin(object):
         f(conn)
         """
 
+    @_reg_event_handler
+    def stop_worker(self, f):
+        """
+        停止worker
+        f()
+        """
+
 
 class BlueprintEventsMixin(object):
 
@@ -189,4 +196,11 @@ class BlueprintEventsMixin(object):
         """
         连接close之后
         f(conn)
+        """
+
+    @_reg_event_handler
+    def stop_app_worker(self, f):
+        """
+        停止worker
+        f()
         """
