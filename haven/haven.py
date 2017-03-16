@@ -111,6 +111,11 @@ class Haven(RoutesMixin, AppEventsMixin):
         for bp in self.blueprints:
             bp.events.repeat_app_timer()
 
+    def _on_worker_stop(self):
+        for bp in self.blueprints:
+            bp.events.stop_app_worker()
+        self.events.stop_worker()
+
     def _worker_run(self):
         setproctitle.setproctitle(self._make_proc_name('worker'))
         self._handle_child_proc_signals()
@@ -123,6 +128,8 @@ class Haven(RoutesMixin, AppEventsMixin):
             pass
         except:
             logger.error('exc occur.', exc_info=True)
+        finally:
+            self._on_worker_stop()
 
     def _spawn_workers(self, workers, target):
         def start_worker_process():

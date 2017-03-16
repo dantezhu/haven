@@ -14,6 +14,10 @@ def login(request):
 def create_app_worker():
     logger.error('bp.create_app_worker')
 
+@bp.stop_app_worker
+def stop_app_worker():
+    logger.error('bp.stop_app_worker')
+
 @bp.create_app_conn
 def create_app_conn(conn):
     logger.error('bp.create_app_conn')
