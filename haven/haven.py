@@ -54,8 +54,8 @@ class Haven(RoutesMixin, AppEventsMixin):
 
         workers = workers if workers is not None else 1
 
-        logger.info('Running server on %s:%s, debug: %s, workers: %s',
-                    host, port, self.debug, workers)
+        logger.info('Running server on %s, debug: %s, workers: %s',
+                    (host, port), self.debug, workers)
 
         self._prepare_server((host, port))
         setproctitle.setproctitle(self._make_proc_name('master'))
