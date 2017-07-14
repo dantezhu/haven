@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+pip install websocket-client
+"""
+
 import time
 
 from websocket import create_connection

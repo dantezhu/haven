@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""
+pip install gevent-websocket
+"""
+
 from gevent import monkey; monkey.patch_all()
 
 from haven.contrib.websocket_gevent_impl import WSGHaven
