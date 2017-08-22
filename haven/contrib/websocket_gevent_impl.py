@@ -7,8 +7,7 @@ websocket协议支持
 import re
 import socket
 import errno
-import gevent.wsgi
-from geventwebsocket.handler import WebSocketHandler
+from geventwebsocket.server import WebSocketServer
 from netkit.stream import Stream
 from haven import logger
 from haven import GHaven
@@ -112,7 +111,7 @@ class WSGHaven(GHaven):
         # 只有这样，才能保证在主进程里面，不会启动accept
         listener = self.server_class.get_listener(address, backlog=self.backlog, family=_socket.AF_INET)
         listener.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-        self.server = gevent.wsgi.WSGIServer(listener, self.wsgi_app, handler_class=WebSocketHandler)
+        self.server = WebSocketServer(listener, self.wsgi_app)
 
     def _serve_forever(self):
         self.server.serve_forever()
