@@ -174,7 +174,8 @@ class Haven(RoutesMixin, AppEventsMixin):
 
         # INT, QUIT, TERM为强制结束
         signal.signal(signal.SIGINT, exit_handler)
-        signal.signal(signal.SIGQUIT, exit_handler)
+        if hasattr(signal, 'SIGQUIT'):
+            signal.signal(signal.SIGQUIT, exit_handler)
         signal.signal(signal.SIGTERM, exit_handler)
 
     def _handle_child_proc_signals(self):
@@ -186,7 +187,8 @@ class Haven(RoutesMixin, AppEventsMixin):
 
         # 强制结束，抛出异常终止程序进行
         signal.signal(signal.SIGINT, exit_handler)
-        signal.signal(signal.SIGQUIT, exit_handler)
+        if hasattr(signal, 'SIGQUIT'):
+            signal.signal(signal.SIGQUIT, exit_handler)
         signal.signal(signal.SIGTERM, exit_handler)
 
     def _prepare_server(self, address):
