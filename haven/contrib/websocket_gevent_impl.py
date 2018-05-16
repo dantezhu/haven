@@ -42,7 +42,8 @@ class WSStream(Stream):
             return None
 
         # 如果二进制传输，获取的将会是bytearray，会导致box.body是bytearray格式，从而导致protobuf parse报错
-        return str(chunk)
+        # 为了同时兼容python2和python3，使用bytes强制转化
+        return bytes(chunk)
 
     def write_to_fd(self, data):
         try:
