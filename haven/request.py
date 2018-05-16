@@ -25,7 +25,7 @@ class Request(object):
     def _parse_raw_data(self):
         try:
             self.box = self.conn.app.box_class()
-        except Exception, e:
+        except Exception as e:
             logger.error('parse raw_data fail. e: %s, request: %s', e, self)
             return False
 

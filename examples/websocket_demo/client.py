@@ -5,6 +5,8 @@
 pip install websocket-client
 """
 
+from __future__ import print_function
+
 import time
 
 from websocket import create_connection
@@ -21,9 +23,9 @@ t1 = time.time()
 # 二进制协议
 ws.send(box.pack(), ABNF.OPCODE_BINARY)
 result = ws.recv()
-print 'time past: ', time.time() - t1
-print "Received '%r'" % result
+print('time past: ', time.time() - t1)
+print("Received '%r'" % result)
 recv_box = Box()
 recv_box.unpack(result)
-print recv_box
+print(recv_box)
 ws.close()

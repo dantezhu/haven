@@ -17,10 +17,10 @@ class WSStream(Stream):
     def read_from_fd(self):
         try:
             chunk = self.sock.receive()
-        except socket.timeout, e:
+        except socket.timeout as e:
             # 服务器是不会recv超时的
             raise e
-        except socket.error, e:
+        except socket.error as e:
             if e.errno == errno.EINTR:
                 # 中断，返回空字符串，但不断掉连接
                 return ''
@@ -28,7 +28,7 @@ class WSStream(Stream):
                 logger.error('exc occur.', exc_info=True)
                 self.close()
                 return None
-        except KeyboardInterrupt, e:
+        except KeyboardInterrupt as e:
             # 中断
             raise e
         except:
@@ -42,12 +42,13 @@ class WSStream(Stream):
             return None
 
         # 如果二进制传输，获取的将会是bytearray，会导致box.body是bytearray格式，从而导致protobuf parse报错
-        return str(chunk)
+        # 为了同时兼容python2和python3，使用bytes强制转化
+        return bytes(chunk)
 
     def write_to_fd(self, data):
         try:
             return self.sock.send(data, binary=True)
-        except KeyboardInterrupt, e:
+        except KeyboardInterrupt as e:
             # 中断
             raise e
         except:
@@ -57,7 +58,7 @@ class WSStream(Stream):
     def close_fd(self):
         try:
             self.sock.close()
-        except KeyboardInterrupt, e:
+        except KeyboardInterrupt as e:
             # 中断
             raise e
         except:
@@ -68,7 +69,7 @@ class WSStream(Stream):
     def shutdown_fd(self, how=2):
         try:
             self.sock.stream.handler.socket.shutdown(how)
-        except KeyboardInterrupt, e:
+        except KeyboardInterrupt as e:
             # 中断
             raise e
         except:

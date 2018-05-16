@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 
 from netkit.contrib.tcp_client import TcpClient
 from reimp import Box
@@ -21,8 +22,8 @@ t1 = time.time()
 while True:
     # 阻塞
     box = client.read()
-    print 'time past: ', time.time() - t1
-    print box
+    print('time past: ', time.time() - t1)
+    print(box)
     if not box:
-        print 'server closed'
+        print('server closed')
         break

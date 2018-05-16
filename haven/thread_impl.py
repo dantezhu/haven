@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from SocketServer import ThreadingTCPServer, StreamRequestHandler
 import threading
 import functools
 from threading import Lock
 from netkit.stream import Stream
 
+from .six import socketserver
 from .connection import Connection
 from .request import Request
 from .haven import Haven
@@ -16,7 +16,7 @@ from . import constants
 
 class THaven(Haven):
 
-    server_class = ThreadingTCPServer
+    server_class = socketserver.ThreadingTCPServer
     connection_class = Connection
     request_class = Request
     stream_class = Stream
@@ -49,7 +49,7 @@ class THaven(Haven):
         self.got_first_request_lock.release()
 
     def _prepare_server(self, address):
-        class RequestHandler(StreamRequestHandler):
+        class RequestHandler(socketserver.StreamRequestHandler):
             # 打开 TCP_NODELAY
             disable_nagle_algorithm = True
 
