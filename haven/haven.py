@@ -176,6 +176,7 @@ class Haven(RoutesMixin, AppEventsMixin):
         signal.signal(signal.SIGINT, exit_handler)
         signal.signal(signal.SIGQUIT, exit_handler)
         signal.signal(signal.SIGTERM, exit_handler)
+        signal.signal(signal.SIGHUP, signal.SIG_IGN)
 
     def _handle_child_proc_signals(self):
         def exit_handler(signum, frame):
@@ -188,6 +189,7 @@ class Haven(RoutesMixin, AppEventsMixin):
         signal.signal(signal.SIGINT, exit_handler)
         signal.signal(signal.SIGQUIT, exit_handler)
         signal.signal(signal.SIGTERM, exit_handler)
+        signal.signal(signal.SIGHUP, signal.SIG_IGN)
 
     def _prepare_server(self, address):
         raise NotImplementedError
