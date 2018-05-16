@@ -96,9 +96,9 @@ class Haven(RoutesMixin, AppEventsMixin):
         cmd_list = list(self.rule_map.keys())
 
         for bp in self.blueprints:
-            cmd_list.extend(bp.rule_map.keys())
+            cmd_list.extend(list(bp.rule_map.keys()))
 
-        duplicate_cmds = (Counter(cmd_list) - Counter(set(cmd_list))).keys()
+        duplicate_cmds = list((Counter(cmd_list) - Counter(set(cmd_list))).keys())
 
         assert not duplicate_cmds, 'duplicate cmds: %s' % duplicate_cmds
 
@@ -141,7 +141,7 @@ class Haven(RoutesMixin, AppEventsMixin):
             inner_p.start()
             return inner_p
 
-        for it in xrange(0, workers):
+        for it in range(0, workers):
             p = start_worker_process()
             self.processes.append(p)
 
@@ -154,7 +154,7 @@ class Haven(RoutesMixin, AppEventsMixin):
                         p = start_worker_process()
                         self.processes[idx] = p
 
-            if not filter(lambda x: x, self.processes):
+            if not any(self.processes):
                 # 没活着的了
                 break
 

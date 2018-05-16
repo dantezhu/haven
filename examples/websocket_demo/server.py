@@ -4,6 +4,8 @@
 pip install gevent-websocket
 """
 
+from __future__ import print_function
+
 from gevent import monkey; monkey.patch_all()
 
 from haven.contrib.websocket_gevent_impl import WSGHaven
@@ -15,7 +17,7 @@ flask_app = Flask(__name__)
 
 @flask_app.route('/http')
 def http():
-    return u'http ok'
+    return 'http ok'
 
 app = WSGHaven(Box, '/echo', flask_app)
 

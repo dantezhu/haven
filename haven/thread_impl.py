@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from SocketServer import ThreadingTCPServer, StreamRequestHandler
+from .six.socketserver import ThreadingTCPServer, StreamRequestHandler
 import threading
 import functools
 from threading import Lock

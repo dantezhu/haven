@@ -131,7 +131,7 @@ class Connection(object):
 
         try:
             request.view_func(request)
-        except Exception, e:
+        except Exception as e:
             logger.error('view_func raise exception. request: %s, e: %s',
                          request, e, exc_info=True)
             view_func_exc = e
