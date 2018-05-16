@@ -172,9 +172,8 @@ class Haven(RoutesMixin, AppEventsMixin):
                 if p:
                     p.terminate()
 
-        # INT, QUIT, TERM为强制结束
+        # INT, TERM为强制结束
         signal.signal(signal.SIGINT, exit_handler)
-        signal.signal(signal.SIGQUIT, exit_handler)
         signal.signal(signal.SIGTERM, exit_handler)
         signal.signal(signal.SIGHUP, signal.SIG_IGN)
 
@@ -187,7 +186,6 @@ class Haven(RoutesMixin, AppEventsMixin):
 
         # 强制结束，抛出异常终止程序进行
         signal.signal(signal.SIGINT, exit_handler)
-        signal.signal(signal.SIGQUIT, exit_handler)
         signal.signal(signal.SIGTERM, exit_handler)
         signal.signal(signal.SIGHUP, signal.SIG_IGN)
 
