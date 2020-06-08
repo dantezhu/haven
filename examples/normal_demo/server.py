@@ -7,9 +7,9 @@ import user
 
 app = Haven(Box)
 
-@app.create_worker
-def create_worker():
-    logger.error('create_worker')
+@app.start_worker
+def start_worker():
+    logger.error('start_worker')
 
 @app.stop_worker
 def stop_worker():

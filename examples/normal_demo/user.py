@@ -8,9 +8,9 @@ def login(request):
     logger.error('request: %s', request)
     request.write(dict(ret=101, body=repr(request.address)))
 
-@bp.create_app_worker
-def create_app_worker():
-    logger.error('bp.create_app_worker')
+@bp.start_app_worker
+def start_app_worker():
+    logger.error('bp.start_app_worker')
 
 @bp.stop_app_worker
 def stop_app_worker():

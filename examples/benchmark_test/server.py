@@ -7,4 +7,4 @@ app = App(Box)
 def index(request):
     request.write(dict(ret=0))
 
-app.run('127.0.0.1', 7777, workers=2)
+app.run('127.0.0.1', 7777)
