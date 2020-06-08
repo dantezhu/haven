@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from reimp import App, logger, Box
 
 app = App(Box)

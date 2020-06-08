@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import logging
 
 from haven import GHaven as App, GBlueprint as Blueprint

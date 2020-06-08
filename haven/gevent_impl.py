@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 import gevent
 from gevent.server import StreamServer
 import functools

@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
-
 import threading
 import functools
 from threading import Lock
+import socketserver
 from netkit.stream import Stream
 
-from .six import socketserver
 from .connection import Connection
 from .request import Request
 from .haven import Haven

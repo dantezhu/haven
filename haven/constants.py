@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 NAME = 'haven'
 
 # 系统返回码
