@@ -10,7 +10,6 @@ class Request(object):
     raw_data = None
     box = None
     is_valid = False
-    blueprint = None
     route_rule = None
     # 是否中断处理，即不调用view_func，主要用在before_request中
     interrupted = False
@@ -38,18 +37,23 @@ class Request(object):
         if self.cmd is None:
             return
 
-        route_rule = self.app.get_route_rule(self.cmd)
-        if route_rule:
-            # 在app层，直接返回
-            self.route_rule = route_rule
-            return
+        self.route_rule = self.app.get_route_rule(self.cmd)
 
-        for bp in self.app.blueprints:
-            route_rule = bp.get_route_rule(self.cmd)
-            if route_rule:
-                self.blueprint = bp
-                self.route_rule = route_rule
-                break
+    @property
+    def cmd(self):
+        return self.box.cmd if self.box else None
+
+    @property
+    def view_func(self):
+        return self.route_rule['view_func'] if self.route_rule else None
+
+    @property
+    def endpoint(self):
+        return self.route_rule['endpoint'] if self.route_rule else None
+
+    @property
+    def blueprint(self):
+        return self.route_rule.get('blueprint') if self.route_rule else None
 
     @property
     def app(self):
@@ -58,26 +62,6 @@ class Request(object):
     @property
     def address(self):
         return self.conn.address
-
-    @property
-    def cmd(self):
-        try:
-            return self.box.cmd
-        except:
-            return None
-
-    @property
-    def view_func(self):
-        return self.route_rule['view_func'] if self.route_rule else None
-
-    @property
-    def endpoint(self):
-        if not self.route_rule:
-            return None
-
-        bp_endpoint = self.route_rule['endpoint']
-
-        return '.'.join([self.blueprint.name, bp_endpoint] if self.blueprint else [bp_endpoint])
 
     def write(self, data):
         if isinstance(data, dict):
@@ -101,6 +85,6 @@ class Request(object):
             return True
 
     def __repr__(self):
-        return 'client_address: %r, cmd: %r, endpoint: %s, raw_data: %r' % (
-            self.address, self.cmd, self.endpoint, self.raw_data
+        return '<%s cmd: %r, endpoint: %s>' % (
+            type(self).__name__, self.cmd, self.endpoint
         )

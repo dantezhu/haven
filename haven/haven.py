@@ -39,7 +39,7 @@ class Haven(RoutesMixin, AppEventsMixin):
         :param workers: workers数量
         :return:
         """
-        self._validate_cmds()
+        self._merge_routes()
 
         if host is None:
             host = constants.SERVER_HOST
@@ -79,20 +79,19 @@ class Haven(RoutesMixin, AppEventsMixin):
 
         return proc_name
 
-    def _validate_cmds(self):
+    def _merge_routes(self):
         """
-        确保 cmd 没有重复
+        合并routes
         :return:
         """
 
-        cmd_list = list(self.rule_map.keys())
-
         for bp in self.blueprints:
-            cmd_list.extend(list(bp.rule_map.keys()))
+            for cmd, rule in bp.rule_map.items():
+                new_rule = dict(rule)
+                new_rule['blueprint'] = bp
+                new_rule['endpoint'] = '.'.join([bp.name, new_rule['endpoint']])
 
-        duplicate_cmds = list((Counter(cmd_list) - Counter(set(cmd_list))).keys())
-
-        assert not duplicate_cmds, 'duplicate cmds: %s' % duplicate_cmds
+                self.add_route_rule(cmd, **new_rule)
 
     def _on_worker_start(self):
         self.events.start_worker()
