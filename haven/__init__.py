@@ -1,4 +1,4 @@
-__version__ = '2.0.3'
+__version__ = '2.0.4'
 
 from .log import logger
 from .utils import safe_call, safe_func
