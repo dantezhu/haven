@@ -2,8 +2,6 @@
 pip install gevent-websocket
 """
 
-from __future__ import print_function
-
 from gevent import monkey; monkey.patch_all()
 
 from haven.contrib.websocket_gevent_impl import WSGHaven

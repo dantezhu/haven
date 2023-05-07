@@ -3,8 +3,6 @@
 pip install websocket-client
 """
 
-from __future__ import print_function
-
 import time
 
 from websocket import create_connection

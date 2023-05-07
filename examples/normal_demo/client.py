@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 from netkit.contrib.tcp_client import TcpClient
 from reimp import Box
 
